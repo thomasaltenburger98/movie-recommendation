@@ -1,0 +1,33 @@
+<!-- Search for movies -->
+<!--<div>
+  <mat-form-field appearance="fill">
+    <input class="searchInputField" matInput placeholder="Search" [(ngModel)]="searchString" (ngModelChange)="applyFilter()" />
+  </mat-form-field>
+</div>-->
+
+<div class="movie-card-container">
+  <div class="movie-card" *ngIf="filteredFilms.length > 0">
+    <div class="movie-content">
+      <div class="arrow-container">
+        <mat-icon (click)="previousMovie()" class="arrow-icon">keyboard_arrow_left</mat-icon>
+        <mat-icon (click)="nextMovie()" class="arrow-icon">keyboard_arrow_right</mat-icon>
+      </div>
+      <div class="movie-details">
+        <h2>{{ filteredFilms[currentMovieIndex].title }}</h2>
+        <div *ngIf="isLoading" class="loading-circle">
+          <mat-spinner></mat-spinner>
+        </div>
+        <div *ngIf="!isLoading">
+          <img src="{{ currentFilmDetail.Poster }}" alt="{{ filteredFilms[currentMovieIndex].title }}">
+          <div>
+            <small>Director: {{ currentFilmDetail.Director }}</small>
+          </div>
+        </div>
+        <div class="icon-buttons">
+          <mat-icon class="thumb-icon" (click)="likeMovie(filteredFilms[currentMovieIndex].id, 5)">thumb_up</mat-icon>
+          <mat-icon class="thumb-icon" (click)="likeMovie(filteredFilms[currentMovieIndex].id, 1)">thumb_down</mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
