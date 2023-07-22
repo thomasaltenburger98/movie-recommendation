@@ -17,27 +17,12 @@ class RatingSeeder extends Seeder
         $ratings = $ratingData['ratings'];
         $userIDs = $ratingData['user_ids'];
 
-        /*$userIDs = [
-            ['user_id' => 1],
-            ['user_id' => 2],
-            ['user_id' => 3],
-            ['user_id' => 4],
-        ];*/
-
         DB::table('users')->insert($userIDs);
 
         $chunkSize = 1000;
         foreach (array_chunk($ratings, $chunkSize) as $chunk) {
             DB::table('user_rating')->insert($chunk);
         }
-
-        //DB::table('users')->insert($userIDs);
-
-        /*$chunkSize = 2;
-        foreach (array_chunk($userIDs, $chunkSize) as $chunk) {
-            DB::table('users')->insert($chunk);
-        }*/
-
 
     }
 

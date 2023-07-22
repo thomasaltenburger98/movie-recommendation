@@ -63,7 +63,6 @@ export class FilmListComponent {
   likeMovie(filmID: number, ratingValue: number) {
     this.isLoading = true;
     this.filmService.rateFilm(filmID, ratingValue).subscribe((result) => {
-      console.log(result);
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
@@ -86,7 +85,6 @@ export class FilmListComponent {
     let filmTitleAndYear = getFilmTitleAndYearFromTitle(this.filteredFilms[this.currentMovieIndex].title);
     let filmTitle = filmTitleAndYear.filmTitle;
     let filmYear = filmTitleAndYear.filmYear;
-    //console.log(filmYear);
 
     this.isLoading = true;
     this.filmDetailService.getFilmDetailByTitleAndYear(filmTitle,filmYear).subscribe(filmDetail => {

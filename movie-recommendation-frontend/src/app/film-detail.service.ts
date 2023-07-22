@@ -8,7 +8,6 @@ import {FilmDetail} from "../models/FilmDetail";
 })
 export class FilmDetailService {
   private apiUrl = 'http://www.omdbapi.com/?i=tt3896198&apikey=a1b0d937';
-  //private apiUrlWithParams = `${apiUrl}&t=${title}&y=${year}`;
 
   constructor(private http : HttpClient) { }
 
@@ -18,7 +17,7 @@ export class FilmDetailService {
     apiUrlWithParams.replace(':year', year);
 
 
-    // Delay fetch for 500ms
+    // Delay fetch for 500ms for test purpose
     return of([]).pipe(
       delay(500),
       switchMap(() => this.http.get<FilmDetail>(apiUrlWithParams))

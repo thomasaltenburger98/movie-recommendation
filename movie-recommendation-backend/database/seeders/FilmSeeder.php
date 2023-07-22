@@ -15,17 +15,6 @@ class FilmSeeder extends Seeder
      */
     public function run(): void
     {
-        $films = [
-            [
-                'title' => 'The Journey of Dreams'
-            ],
-            [
-                'title' => 'Echoes of Destiny'
-            ],
-            [
-                'title' => 'Whispering Shadows'
-            ]
-        ];
         $films = $this->getFilmsFromCSV(base_path('storage/app/movies.csv'));
 
 
@@ -88,12 +77,6 @@ class FilmSeeder extends Seeder
 
 
 
-        // assign random genres
-        /*$genres = Genre::all();
-        foreach ($filmIds as $filmId) {
-            $randomGenres = $genres->random(rand(1, 3));
-            Film::find($filmId)->genres()->attach($randomGenres);
-        }*/
     }
 
 

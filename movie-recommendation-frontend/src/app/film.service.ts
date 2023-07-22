@@ -38,9 +38,7 @@ export class FilmService {
   rateFilm(filmID: number, ratingValue: number): Observable<any> {
     return this.userService.getUserID().pipe(
       switchMap((userId: number) => {
-        //let userId = -1;
         let url = this.apiUrl + "/" + filmID + "/user/" + userId + "/rate/" + ratingValue;
-        console.log(url);
 
         return this.http.get(url);
       })
