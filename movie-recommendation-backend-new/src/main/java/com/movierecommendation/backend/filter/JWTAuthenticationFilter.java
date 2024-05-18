@@ -46,4 +46,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
     }
 
+    @Override
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException, ServletException {
+        User user = (User) auth.getPrincipal();
+        String token = Jwts.builder()
+                .setSubject(user.getUsername())
+                .setExpiration(new Date(System.currentTimeMillis() + 864_000_000)) // 10 days
+                .signWith(SignatureAlgorithm.HS512, "SecretKeyToGenJWTs".getBytes())
+                .compact();
+        res.addHeader("Authorization", "Bearer " + token);
+    }
 }
