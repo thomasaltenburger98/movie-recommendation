@@ -25,8 +25,8 @@ import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 })
 export class FilmListComponent {
   films: Film[] = [];
-  //filteredFilms: Film[] = [];
-  searchString: string = "";
+  filteredFilms: Film[] = [];
+  //searchString: string = "";
   isLoading: boolean = false;
   currentSearchTerm: string = '';
   currentMovieIndex = 0;
@@ -34,84 +34,55 @@ export class FilmListComponent {
     Title: "", Director: "", Poster: "", Rated: "", Year: ""
   };
 
-  movies = [
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    }
-  ];
-  filteredMovies: any[] = [];
-
   constructor(private filmService: FilmService, private filmDetailService: FilmDetailService, private userService: UserService) { }
 
   ngOnInit() {
-    this.filteredMovies = this.movies;
-    /*this.isLoading = true;
+    this.isLoading = true;
     this.filmService.getFilms().subscribe(films => {
       this.films = films;
       console.log(this.films);
       this.filteredFilms = this.films;
 
       this.getFilmDetails();
-    });*/
+    });
   }
 
   /**
    * used to search in film list
    */
-  applyFilter(): void {
-    if (this.searchString.length > 0) {
-      this.filteredMovies = this.movies.filter((film) =>
+  /*applyFilter(): void {
+    if (this.searchString) {
+      this.filteredFilms = this.films.filter((film) =>
         film.title.toLowerCase().includes(this.searchString.toLowerCase())
       );
     } else {
-      this.filteredMovies = this.movies;
+      this.filteredFilms = this.films;
     }
-  }
+  }*/
 
   likeMovie(filmID: number, ratingValue: number) {
-    /*this.isLoading = true;
+    this.isLoading = true;
     this.filmService.rateFilm(filmID, ratingValue).subscribe((result) => {
       // TODO check if successful
-      /!*this.filteredFilms = this.filteredFilms.filter((film) =>
+      /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
-      );*!/
+      );*/
       this.isLoading = false;
-    });*/
+    });
   }
 
   previousMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex - 1 + this.filteredMovies.length) % this.filteredMovies.length;
+    this.currentMovieIndex = (this.currentMovieIndex - 1 + this.filteredFilms.length) % this.filteredFilms.length;
     this.getFilmDetails();
   }
 
   nextMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex + 1) % this.filteredMovies.length;
+    this.currentMovieIndex = (this.currentMovieIndex + 1) % this.filteredFilms.length;
     this.getFilmDetails();
   }
 
   getFilmDetails() {
-    let filmTitleAndYear = getFilmTitleAndYearFromTitle(this.filteredMovies[this.currentMovieIndex].title);
+    let filmTitleAndYear = getFilmTitleAndYearFromTitle(this.filteredFilms[this.currentMovieIndex].title);
     let filmTitle = filmTitleAndYear.filmTitle;
     let filmYear = filmTitleAndYear.filmYear;
 

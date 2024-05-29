@@ -18,14 +18,12 @@ import {FormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
 import {HttpClient, HttpClientModule, HttpHandler} from "@angular/common/http";
-import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FilmListComponent,
-    FilmDetailsComponent,
-    LoginComponent
+    FilmDetailsComponent
   ],
   imports: [
     HttpClientModule,

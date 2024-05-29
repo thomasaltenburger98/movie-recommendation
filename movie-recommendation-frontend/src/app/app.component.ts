@@ -9,12 +9,15 @@ import {tap} from "rxjs";
 })
 export class AppComponent {
   title = 'movie-recommendation-frontend';
+  userID: number = -1;
 
   constructor(private userService: UserService) {
   }
 
   ngOnInit() {
-
+    this.userService.getUserID().subscribe((userID: number) => {
+      this.userID = userID;
+    });
   }
 
 }

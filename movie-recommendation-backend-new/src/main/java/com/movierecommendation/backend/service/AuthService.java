@@ -6,7 +6,6 @@ import com.movierecommendation.backend.repository.TokenRepository;
 import com.movierecommendation.backend.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,9 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 
 @Service
@@ -27,8 +24,6 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private TokenRepository tokenRepository;
-
-    private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512); // Generate a key
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -67,19 +62,12 @@ public class AuthService implements UserDetailsService {
         return tokenCount == 0;
     }
 
-    public SecretKey getSecretKey() {
-        return key;
-    }
-
     public Token generateToken(User user) {
-        //String encodedKey = Base64.getEncoder().encodeToString(key.getEncoded()); // Encode the key to a string
-
         String tokenValue = Jwts.builder()
                 .setSubject(user.getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + 864_000_000)) // 10 days
-                .signWith(this.key) // Use the generated key
+                .signWith(SignatureAlgorithm.HS512, "SecretKeyToGenJWTs".getBytes())
                 .compact();
-
         Token token = new Token();
         token.setTokenValue(tokenValue);
         token.setExpiration(new Date(System.currentTimeMillis() + 864_000_000));

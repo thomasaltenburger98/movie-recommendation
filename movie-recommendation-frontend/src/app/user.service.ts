@@ -6,36 +6,11 @@ import {map, Observable, of, tap} from "rxjs";
   providedIn: 'root'
 })
 export class UserService {
-  //private ApiURL = "http://127.0.0.1:8000/user/newid";
-  private ApiURL = "http://127.0.0.1:8080/api/auth/register";
-  private ApiURLRegister = "http://127.0.0.1:8080/api/auth/register";
-  private ApiURLLogin = "http://127.0.0.1:8080/api/auth/login";
+  private ApiURL = "http://127.0.0.1:8000/user/newid";
   private userID: number;
 
   constructor(private http: HttpClient) {
     this.userID = -1;
-  }
-
-  registerUser(username: string, password: string): Observable<any> {
-    return this.http.post(this.ApiURLRegister, {
-      username: username, password: password
-    });
-  }
-
-  loginUser(username: string, password: string): Observable<any> {
-    return this.http.post(this.ApiURLLogin, {
-      username: username, password: password
-    }).pipe(
-      tap((response: any) => {
-        if (response && response.tokenValue) {
-          this.setToken(response.tokenValue);  // Speichern Sie den Token
-        }
-      })
-    );
-  }
-
-  private setToken(token: string) {
-    localStorage.setItem('authToken', token);
   }
 
   public getUserID(): Observable<number> {
