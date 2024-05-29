@@ -21,14 +21,6 @@ public class FilmController {
         return filmRepository.findAll();
     }
 
-    @GetMapping
-    public List<>
-
-    @GetMapping("/hello")
-    public ResponseEntity<?> returnHelloWorld() {
-        return ResponseEntity.ok("Hello World");
-    }
-
     @GetMapping("/{id}")
     public Film show(@PathVariable int id) {
         return filmRepository.findById(id).orElse(null);
