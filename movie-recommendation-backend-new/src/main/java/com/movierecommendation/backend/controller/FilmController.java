@@ -3,6 +3,7 @@ package com.movierecommendation.backend.controller;
 import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -18,6 +19,14 @@ public class FilmController {
     @GetMapping
     public List<Film> index() {
         return filmRepository.findAll();
+    }
+
+    @GetMapping
+    public List<>
+
+    @GetMapping("/hello")
+    public ResponseEntity<?> returnHelloWorld() {
+        return ResponseEntity.ok("Hello World");
     }
 
     @GetMapping("/{id}")

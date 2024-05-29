@@ -34,7 +34,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
     }
 
-    /*@PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
@@ -44,7 +44,7 @@ public class AuthController {
             return ResponseEntity.ok(token);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-    }*/
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestBody Map<String, Long> request) {
