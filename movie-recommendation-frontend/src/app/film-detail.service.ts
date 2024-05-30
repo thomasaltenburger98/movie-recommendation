@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {delay, Observable, of, switchMap} from "rxjs";
 import {FilmDetail} from "../models/FilmDetail";
 

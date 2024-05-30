@@ -17,30 +17,23 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {FormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
-import {HttpClient, HttpClientModule, HttpHandler} from "@angular/common/http";
+import { HttpClient, HttpHandler, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { LoginComponent } from './login/login.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    FilmListComponent,
-    FilmDetailsComponent,
-    LoginComponent
-  ],
-  imports: [
-    HttpClientModule,
-    BrowserModule,
-    FormsModule,
-    AppRoutingModule,
-    CommonModule,
-    BrowserAnimationsModule,
-    MatProgressSpinnerModule,
-    MatListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        FilmListComponent,
+        FilmDetailsComponent,
+        LoginComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        AppRoutingModule,
+        CommonModule,
+        BrowserAnimationsModule,
+        MatProgressSpinnerModule,
+        MatListModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatIconModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {flatMap, map, Observable, switchMap, tap} from "rxjs";
 import {Film} from "../models/Film";
 import {UserService} from "./user.service";
