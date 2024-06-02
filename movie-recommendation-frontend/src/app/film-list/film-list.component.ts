@@ -3,7 +3,6 @@ import {FilmService} from "../film.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Film} from "../../models/Film";
 import {UserService} from "../user.service";
-import {FilmDetailService} from "../film-detail.service";
 import {FilmDetail} from "../../models/FilmDetail";
 import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 
@@ -25,6 +24,7 @@ import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 })
 export class FilmListComponent {
   films: Film[] = [];
+  filteredFilms: Film[] = [];
   //filteredFilms: Film[] = [];
   searchString: string = "";
   isLoading: boolean = false;
@@ -62,10 +62,11 @@ export class FilmListComponent {
   ];
   filteredMovies: any[] = [];
 
-  constructor(private filmService: FilmService, private filmDetailService: FilmDetailService, private userService: UserService) { }
+  constructor(private filmService: FilmService, private userService: UserService) { }
 
   ngOnInit() {
-    this.filteredMovies = this.movies;
+    this.loadFilms(1);
+    //this.filteredMovies = this.movies;
     /*this.isLoading = true;
     this.filmService.getFilms().subscribe(films => {
       this.films = films;
@@ -74,6 +75,19 @@ export class FilmListComponent {
 
       this.getFilmDetails();
     });*/
+  }
+
+  // Load film by pagination
+  loadFilms(page: number): void {
+    this.isLoading = true;
+    this.filmService.getFilmsPage(page).subscribe(films => {
+      console.log(films);
+      this.films = films;
+      console.log(this.films);
+      this.filteredFilms = this.films;
+
+      //this.getFilmDetails();
+    });
   }
 
   /**
@@ -116,10 +130,10 @@ export class FilmListComponent {
     let filmYear = filmTitleAndYear.filmYear;
 
     this.isLoading = true;
-    this.filmDetailService.getFilmDetailByTitleAndYear(filmTitle,filmYear).subscribe(filmDetail => {
+    /*this.filmDetailService.getFilmDetailByTitleAndYear(filmTitle,filmYear).subscribe(filmDetail => {
       this.currentFilmDetail = filmDetail;
       this.isLoading = false;
-    });
+    });*/
   }
 
 }

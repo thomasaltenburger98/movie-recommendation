@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,4 +36,9 @@ mat-form-field {
 
 button {
   align-self: flex-end;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 16px;
 }

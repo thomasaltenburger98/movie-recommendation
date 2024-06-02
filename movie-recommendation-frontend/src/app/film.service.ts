@@ -8,13 +8,19 @@ import {UserService} from "./user.service";
   providedIn: 'root'
 })
 export class FilmService {
-  private apiUrl = 'http://127.0.0.1:8000/films';
+  public apiUrl = 'http://127.0.0.1:8080/api/films';
 
   constructor(private http: HttpClient, private userService: UserService) { }
 
   // get recommended films of user
   getFilms(): Observable<Film[]> {
     return this.http.get<Film[]>(this.apiUrl);
+  }
+
+  // get film pagination
+  getFilmsPage(page: number): Observable<any> {
+    const url = `${this.apiUrl}/page/${page}`;
+    return this.http.get<any>(url);
   }
 
   // for film detail page
@@ -39,18 +45,5 @@ export class FilmService {
     return new Observable<void>();
     //return this.http.delete<void>(url);
   }*/
-
-  rateFilm(filmID: number, ratingValue: number): Observable<any> {
-    return new Observable<any>();
-    /*return this.userService.getUserID().pipe(
-      switchMap((userId: number) => {
-        let url = this.apiUrl + "/" + filmID + "/user/" + userId + "/rate/" + ratingValue;
-
-        return this.http.get(url);
-      })
-    );*/
-  }
-
-  // TODO: delete rate of film
 
 }

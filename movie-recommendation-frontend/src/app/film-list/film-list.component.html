@@ -4,11 +4,11 @@
   </div>
   <h2 *ngIf="searchString.length == 0">What movies do you like?</h2>
   <h2 *ngIf="searchString.length > 0">You are looking for "{{ searchString }}"?</h2>
-  <div class="movie-item" *ngFor="let movie of filteredMovies">
+  <div class="movie-item" *ngFor="let film of filteredFilms">
     <img src="assets/avatar.jpg" alt="Avatar" />
     <div class="movie-details">
-      <h3>{{ movie.title }}</h3>
-      <p>{{ movie.year }} &middot; {{ movie.duration }} &middot; {{ movie.rating }}</p>
+      <h3>{{ film.title }}</h3>
+      <p>{{ film.erscheinungsjahr }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
     </div>
     <div class="movie-actions">
       <button>more details</button>

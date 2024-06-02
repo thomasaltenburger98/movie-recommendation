@@ -2,14 +2,9 @@ package com.movierecommendation.backend.repository;
 
 
 
-import com.movierecommendation.backend.model.Token;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TokenRepository extends JpaRepository<Token, String> {
-    void deleteByUserId(Long userId);
-    Token findByTokenValue(String tokenValue);
-    long countByUserId(Long userId);
+public interface TokenRepository extends TokenRepositoryBasic, TokenRepositoryCustom {
 }
 

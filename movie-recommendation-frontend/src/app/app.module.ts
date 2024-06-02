@@ -1,5 +1,6 @@
 import { RouterModule } from '@angular/router';
 
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -17,14 +18,24 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {FormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
-import { HttpClient, HttpHandler, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpHandler,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from "@angular/common/http";
 import { LoginComponent } from './login/login.component';
+import {MatButton} from "@angular/material/button";
+import {RegisterComponent} from "./register/register.component";
+import {AuthInterceptorService} from "./auth-interceptor.service";
 
 @NgModule({ declarations: [
         AppComponent,
         FilmListComponent,
         FilmDetailsComponent,
-        LoginComponent
+        LoginComponent,
+        RegisterComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         FormsModule,
@@ -35,5 +46,10 @@ import { LoginComponent } from './login/login.component';
         MatListModule,
         MatFormFieldModule,
         MatInputModule,
-        MatIconModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        MatIconModule,
+        MatSidenavModule, MatButton], providers:
+    [
+      provideHttpClient(withInterceptorsFromDi()),
+      { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+    ] })
 export class AppModule { }

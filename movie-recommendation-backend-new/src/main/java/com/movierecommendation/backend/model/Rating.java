@@ -38,5 +38,9 @@ public class Rating {
     public void setErstelltAm(Date erstelltAm) {
         this.erstelltAm = erstelltAm;
     }
+
+    public float getRatingValue() {
+        return ratingValue;
+    }
 }
 

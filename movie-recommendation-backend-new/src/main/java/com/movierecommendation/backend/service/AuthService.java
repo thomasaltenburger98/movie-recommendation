@@ -2,8 +2,7 @@ package com.movierecommendation.backend.service;
 
 import com.movierecommendation.backend.model.Token;
 import com.movierecommendation.backend.model.User;
-import com.movierecommendation.backend.repository.TokenRepository;
-import com.movierecommendation.backend.repository.UserRepository;
+import com.movierecommendation.backend.repository.*;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 
 @Service
@@ -67,6 +65,15 @@ public class AuthService implements UserDetailsService {
         return tokenCount == 0;
     }
 
+    public boolean logoutWithToken(String token) {
+        Token tokenObj = tokenRepository.findByTokenValue(token);
+        if (tokenObj != null) {
+            tokenRepository.delete(tokenObj);
+            return true;
+        }
+        return false;
+    }
+
     public SecretKey getSecretKey() {
         return key;
     }
@@ -90,6 +97,10 @@ public class AuthService implements UserDetailsService {
     public boolean verifyToken(String tokenValue) {
         Token token = tokenRepository.findByTokenValue(tokenValue);
         return token != null && token.getExpiration().after(new Date());
+    }
+
+    public boolean userExists(String username) {
+        return userRepository.findByUsername(username) != null;
     }
 }
 
