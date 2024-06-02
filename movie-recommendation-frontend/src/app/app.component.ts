@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {UserService} from "./user.service";
-import {tap} from "rxjs";
+import {catchError, tap} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -10,11 +11,20 @@ import {tap} from "rxjs";
 export class AppComponent {
   title = 'movie-recommendation-frontend';
 
-  constructor(private userService: UserService) {
+  constructor(protected userService: UserService, private router: Router) {
+
   }
 
   ngOnInit() {
 
+  }
+
+  logout() {
+    this.userService.logoutUser().subscribe(response => {
+      if (response.status === 200) {
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
 }
