@@ -13,8 +13,8 @@ public class Film {
 
     private String title;
     private String beschreibung;
-    private Date erstelltAm;
-    private Date aktualisiertAm;
+    private Date erscheinungsjahr;
+    private int bewertung;
 
     @ManyToMany
     private List<Genre> genres;
@@ -44,18 +44,11 @@ public class Film {
         this.beschreibung = beschreibung;
     }
 
-    public Date getErstelltAm() {
-        return erstelltAm;
+    public Date getErscheinungsjahr() {
+        return erscheinungsjahr;
     }
-    public void setErstelltAm(Date erstelltAm) {
-        this.erstelltAm = erstelltAm;
-    }
-
-    public Date getAktualisiertAm() {
-        return aktualisiertAm;
-    }
-    public void setAktualisiertAm(Date aktualisiertAm) {
-        this.aktualisiertAm = aktualisiertAm;
+    public void setErscheinungsjahr(Date erstelltAm) {
+        this.erscheinungsjahr = erstelltAm;
     }
 
     public List<Genre> getGenres() {
@@ -70,6 +63,14 @@ public class Film {
     }
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public int getBewertung() {
+        return bewertung;
+    }
+
+    public void setBewertung(int bewertung) {
+        this.bewertung = bewertung;
     }
 }
 
