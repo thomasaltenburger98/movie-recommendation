@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {flatMap, map, Observable, switchMap, tap} from "rxjs";
-import {Film} from "../models/Film";
+import {Film} from "../../models/Film";
 import {UserService} from "./user.service";
+import {FilmDetail} from "../../models/FilmDetail";
 
 @Injectable({
   providedIn: 'root'
@@ -18,15 +19,21 @@ export class FilmService {
   }
 
   // get film pagination
-  getFilmsPage(page: number): Observable<any> {
+  getFilmsPage(page: number): Observable<Film[]> {
     const url = `${this.apiUrl}/page/${page}`;
-    return this.http.get<any>(url);
+    return this.http.get<Film[]>(url);
   }
 
   // for film detail page
   getFilmById(id: number): Observable<Film> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<Film>(url);
+  }
+
+  // get film details
+  getFilmDetails(id: number): Observable<FilmDetail> {
+    const url = `${this.apiUrl}/detail/${id}`;
+    return this.http.get<FilmDetail>(url);
   }
 
   // is it necessary???
