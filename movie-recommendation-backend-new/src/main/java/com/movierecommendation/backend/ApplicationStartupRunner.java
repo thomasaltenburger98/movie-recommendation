@@ -2,8 +2,11 @@ package com.movierecommendation.backend;
 
 import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.model.Genre;
+import com.movierecommendation.backend.model.User;
 import com.movierecommendation.backend.repository.FilmRepository;
 import com.movierecommendation.backend.repository.GenreRepository;
+import com.movierecommendation.backend.repository.UserRepository;
+import com.movierecommendation.backend.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ApplicationStartupRunner implements CommandLineRunner {
@@ -24,15 +25,52 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     @Autowired
     private GenreRepository genreRepository;
 
+    @Autowired
+    private AuthService authService;
+
+    private Map<Long, Long> filmTmbdAssociation = new HashMap<>();
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        addTestUser();
+        loadTmdbData();
         loadFilmData();
+    }
+
+    private void addTestUser() {
+        authService.register("test123", "#test123");
     }
 
     private void loadFilmData2() {
         String filePath = System.getProperty("user.dir");
         System.out.println("Current file path: " + filePath);
+    }
+
+    private void loadTmdbData() {
+        System.out.println("Loading tmdb data");
+        String csvFile = "../ml-latest-small/links.csv";
+        String line;
+        String csvSplitBy = ",";
+        int i = 1;
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            // Skip the header line
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                if (i > 1000) {
+                    break;
+                }
+                i++;
+                String[] filmData = line.split(csvSplitBy);
+                if (filmData.length == 3) {
+                    Long filmId = Long.parseLong(filmData[0]);
+                    Long tmdbId = Long.parseLong(filmData[2]);
+                    filmTmbdAssociation.put(filmId, tmdbId);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadFilmData() {
@@ -69,6 +107,13 @@ public class ApplicationStartupRunner implements CommandLineRunner {
                         genres.add(genre);
                     }
                     film.setGenres(genres);
+
+                    // set TMDB id from filmTmbdAssociation
+                    Long tmdbId = filmTmbdAssociation.get(film.getId());
+                    if (tmdbId != null) {
+                        film.setTmdbId(tmdbId);
+                    }
+
                     filmRepository.save(film);
                 }
             }
