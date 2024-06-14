@@ -33,6 +33,10 @@ export class FilmListComponent {
   currentFilmDetail: FilmDetail = {
     Title: "", Director: "", Poster: "", Rated: "", Year: ""
   };
+  progress = 0;
+  currentCount = 0;
+  totalCount = 10; // Gesamtzahl Ziel
+  goalReached = false;
 
   movies = [
     {
@@ -66,6 +70,7 @@ export class FilmListComponent {
 
   ngOnInit() {
     this.loadFilms(1);
+    this.getRatingCount();
     //this.filteredMovies = this.movies;
     /*this.isLoading = true;
     this.filmService.getFilms().subscribe(films => {
@@ -104,14 +109,9 @@ export class FilmListComponent {
   }
 
   likeMovie(filmID: number, ratingValue: number) {
-    /*this.isLoading = true;
-    this.filmService.rateFilm(filmID, ratingValue).subscribe((result) => {
-      // TODO check if successful
-      /!*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*!/
-      this.isLoading = false;
-    });*/
+    this.rateFilm(filmID, 1, ratingValue).subscribe(() => {
+      this.getRatingCount();
+    });
   }
 
   previousMovie() {
@@ -135,5 +135,28 @@ export class FilmListComponent {
       this.isLoading = false;
     });*/
   }
+   getRatingCount() {
+      this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
+        this.currentCount = count;
+        this.updateProgress();
+      });
+    }
 
+  rateFilm(filmId: number, userId: number, ratingValue: number) {
+    const rating = {
+      filmId: filmId,
+      userId: userId,
+      ratingValue: ratingValue
+    };
+    return this.http.post<void>(this.baseUrl, rating);
+  }
+
+  updateProgress() {
+    this.progress = (this.currentCount / this.totalCount) * 100;
+    this.goalReached = this.currentCount >= this.totalCount;
+  }
+
+  onGoalReached() {
+    console.log('Ziel erreicht!');
+  }
 }

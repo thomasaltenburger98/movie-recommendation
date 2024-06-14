@@ -21,6 +21,11 @@
       <i class="thumbs-up"></i>-->
     </div>
   </div>
+  <div *ngIf="!goalReached" class="progress-bar">
+    <div class="progress-bar-fill" [ngStyle]="{'width.%': progress * 100}"></div>
+  </div>
+  <div *ngIf="!goalReached" class="progress-label">{{ currentCount }}/{{ totalCount }}</div>
+  <button *ngIf="goalReached" (click)="onGoalReached()">Weiter zu meinen Empfehlungen</button>
 </div>
 
 <!--TODO: Add pagination-->

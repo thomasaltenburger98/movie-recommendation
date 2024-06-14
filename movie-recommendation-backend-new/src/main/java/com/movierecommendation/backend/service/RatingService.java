@@ -28,5 +28,9 @@ public class RatingService {
     public List<Rating> getAllRatedFilmOfUser(int userId) {
         return ratingRepository.findAllByUserId(userId);
     }
+
+    public long getRatingCount() {
+        return ratingRepository.count();
+    }
 }
 
