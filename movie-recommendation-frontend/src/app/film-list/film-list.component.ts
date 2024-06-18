@@ -5,6 +5,7 @@ import {Film} from "../../models/Film";
 import {UserService} from "../services/user.service";
 import {Cast, FilmDetail} from "../../models/FilmDetail";
 import {getFilmTitleAndYearFromTitle} from "../utils/utils";
+import {RatingService} from "../services/rating.service";
 
 @Component({
   selector: 'app-film-list',
@@ -25,66 +26,21 @@ import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 export class FilmListComponent {
   films: Film[] = [];
   filteredFilms: Film[] = [];
-  //filteredFilms: Film[] = [];
   searchString: string = "";
   isLoading: boolean = false;
-  currentSearchTerm: string = '';
-  currentMovieIndex = 0;
-  currentFilmDetail: FilmDetail = {
-    Title: "", Director: "", Poster: "", Rated: "", Year: ""
-  };
 
-  movies = [
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    }
-  ];
-  filteredMovies: any[] = [];
-
-  constructor(private filmService: FilmService, private userService: UserService) { }
+  constructor(private filmService: FilmService, private userService: UserService, private ratingService: RatingService) { }
 
   ngOnInit() {
     this.loadFilms(1);
-    //this.filteredMovies = this.movies;
-    /*this.isLoading = true;
-    this.filmService.getFilms().subscribe(films => {
-      this.films = films;
-      console.log(this.films);
-      this.filteredFilms = this.films;
-
-      this.getFilmDetails();
-    });*/
   }
 
   // Load film by pagination
   loadFilms(page: number): void {
     this.isLoading = true;
     this.filmService.getFilmsPage(page).subscribe(films => {
-      console.log(films);
-      this.films = films;
-      console.log(this.films);
-      this.filteredFilms = this.films;
+      this.filteredFilms = films;
+      this.getFilmDetailsForAllFilms();
 
       //this.getFilmDetails();
     });
@@ -94,46 +50,79 @@ export class FilmListComponent {
    * used to search in film list
    */
   applyFilter(): void {
-    if (this.searchString.length > 0) {
-      this.filteredMovies = this.movies.filter((film) =>
-        film.title.toLowerCase().includes(this.searchString.toLowerCase())
-      );
-    } else {
-      this.filteredMovies = this.movies;
-    }
+
   }
 
-  likeMovie(filmID: number, ratingValue: number) {
-    /*this.isLoading = true;
-    this.filmService.rateFilm(filmID, ratingValue).subscribe((result) => {
-      // TODO check if successful
-      /!*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*!/
-      this.isLoading = false;
-    });*/
-  }
-
-  previousMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex - 1 + this.filteredMovies.length) % this.filteredMovies.length;
-    this.getFilmDetails();
-  }
-
-  nextMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex + 1) % this.filteredMovies.length;
-    this.getFilmDetails();
-  }
-
-  getFilmDetails() {
-    let filmTitleAndYear = getFilmTitleAndYearFromTitle(this.filteredMovies[this.currentMovieIndex].title);
-    let filmTitle = filmTitleAndYear.filmTitle;
-    let filmYear = filmTitleAndYear.filmYear;
-
+  likeMovie(film: Film) {
     this.isLoading = true;
-    /*this.filmDetailService.getFilmDetailByTitleAndYear(filmTitle,filmYear).subscribe(filmDetail => {
-      this.currentFilmDetail = filmDetail;
+    this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
+      // TODO check if successful
+      /*this.filteredFilms = this.filteredFilms.filter((film) =>
+        film.id !== filmID
+      );*/
       this.isLoading = false;
-    });*/
+    });
+  }
+
+  dislikeMovie(film: Film) {
+    this.isLoading = true;
+    this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
+      // TODO check if successful
+      /*this.filteredFilms = this.filteredFilms.filter((film) =>
+        film.id !== filmID
+      );*/
+      this.isLoading = false;
+    });
+  }
+
+  getFilmDetailsForAllFilms(): void {
+    this.filteredFilms.forEach((film, index) => {
+      this.getFilmDetails(film.id, index);
+    });
+  }
+
+  getFilmDetails(filmId: number, index: number) {
+    this.filteredFilms[index].isLoading = true;
+
+    // wait 5 seconds here
+    setTimeout(() => {
+      this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
+        console.log(filmDetail);
+        this.filteredFilms[index].filmDetail = filmDetail;
+        //console.log(this.filteredFilms[index]);
+        this.filteredFilms[index].isLoading = false;
+        console.log(this.filteredFilms);
+      });
+    }, 2000);
+  }
+
+  private getActors(values: Cast[]): Cast[] {
+    return values.filter(cast => cast.known_for_department === 'Acting');
+  }
+  protected getActorsAsString(values: Cast[]|undefined): string {
+    if (!values) {
+      return '';
+    }
+    return this.getActors(values).slice(0, 6).map(cast => cast.name).join(', ') + '...';
+  }
+  protected getRuntimeAsTimeString(runtime: string|undefined): string {
+    if (runtime != undefined) {
+      const runTimeInt = parseInt(runtime);
+      const hours = Math.floor(runTimeInt / 60);
+      const minutes = runTimeInt % 60;
+      return `${hours}h ${minutes}min`;
+    }
+    return "";
+  }
+
+
+  getFunctionNames(obj: any): string[] {
+    if (!obj) {
+      return [];
+    }
+
+    const prototype = Object.getPrototypeOf(obj);
+    return Object.getOwnPropertyNames(prototype);
   }
 
 }

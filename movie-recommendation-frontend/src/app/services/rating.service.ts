@@ -1,9 +1,24 @@
 import { Injectable } from '@angular/core';
+import {Observable} from "rxjs";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
 })
 export class RatingService {
+  public apiUrl = 'http://127.0.0.1:8080/api/ratings';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
+
+  rateFilm(filmID: number, ratingValue: number): Observable<any> {
+    // TODO: add ratingValue to request body
+    const response = this.http.post(this.apiUrl, {
+      film_id: filmID,
+      rating: ratingValue
+    });
+
+    return response;
+  }
+
+
 }
