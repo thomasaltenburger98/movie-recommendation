@@ -1,0 +1,59 @@
+<div class="detail-page">
+  <h1 class="title">Avatar</h1>
+
+  <div class="movie-info">
+    <img src="path-to-avatar-poster.jpg" alt="Avatar Movie Poster" mat-card-image>
+    <div class="details">
+      <div class="tags">
+        <mat-chip-set>
+          <mat-chip>Action</mat-chip>
+          <mat-chip>Abenteuer</mat-chip>
+          <mat-chip>Fantasy</mat-chip>
+        </mat-chip-set>
+      </div>
+      <div class="stars">
+        <mat-icon color="warn">star</mat-icon>
+        <mat-icon color="warn">star</mat-icon>
+        <mat-icon color="warn">star</mat-icon>
+        <mat-icon color="warn">star</mat-icon>
+        <mat-icon color="warn">star_half</mat-icon>
+      </div>
+      <p><strong>Erschienen am:</strong> 2009</p>
+      <p><strong>Film dauert:</strong> 2h 42min</p>
+      <p>
+        Ein querschnittgelähmter US-Marinesoldat wird auf eine ganz besondere Mission zum Mond Pandora geschickt,
+        auf der er hin- und hergerissen ist, zwischen striktem Befehlsgehorsam und dem Wunsch, die Welt zu retten,
+        die seine neue Heimat ist.
+      </p>
+      <p><strong>Regie:</strong> ...</p>
+      <p><strong>Drehbuch:</strong> ...</p>
+      <p><strong>FSK:</strong> 12+</p>
+    </div>
+  </div>
+
+  <div class="trailer">
+    <button mat-icon-button color="accent">
+      <mat-icon>play_circle_filled</mat-icon>
+    </button>
+  </div>
+
+  <div class="cast">
+    <h2>Besetzung</h2>
+    <mat-list>
+      <mat-list-item *ngFor="let castMember of cast">
+        <div mat-line>{{ castMember.name }}</div>
+        <div mat-line>{{ castMember.role }}</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <div class="similar-movies">
+    <h2>Ähnliche Filme, die andere User auch mögen</h2>
+    <div class="movie-list">
+      <div class="movie-item" *ngFor="let movie of similarMovies">
+        <img src="{{ movie.img }}" alt="{{ movie.title }}" mat-card-image>
+        <p>{{ movie.title }}</p>
+      </div>
+    </div>
+  </div>
+</div>
