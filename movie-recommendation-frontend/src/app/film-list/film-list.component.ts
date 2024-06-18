@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
-import {FilmService} from "../film.service";
+import {FilmService} from "../services/film.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Film} from "../../models/Film";
-import {UserService} from "../user.service";
-import {FilmDetail} from "../../models/FilmDetail";
+import {UserService} from "../services/user.service";
+import {Cast, FilmDetail} from "../../models/FilmDetail";
 import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 
 @Component({
