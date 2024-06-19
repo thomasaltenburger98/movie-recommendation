@@ -1,5 +1,21 @@
 .movie-list {
-  padding: 40px 80px;
+  padding: 0px 80px;
+
+  .header {
+    display: block;
+    height: 100%;
+    text-align: center;
+    align-content: center;
+  }
+
+  .headline {
+    display: block;
+    text-align: center;
+  }
+
+  .logo{
+    width: 75px;
+  }
 
   .search-bar {
     display: flex;
@@ -152,3 +168,4 @@
     background-position: 200px;
   }
 }
+
