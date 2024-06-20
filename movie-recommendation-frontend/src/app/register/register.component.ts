@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {UserService} from "../user.service";
+import {UserService} from "../services/user.service";
 import {Router, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
 import {MatFormField, MatLabel} from "@angular/material/form-field";

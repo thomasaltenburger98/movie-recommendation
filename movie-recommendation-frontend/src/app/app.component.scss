@@ -3,5 +3,16 @@
 }
 
 .sidenav {
-  width: 250px;
+  width: 150px;
+}
+
+img {
+  width: 50px;
+  padding-left: 50px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+mat-sidenav * {
+  margin-left: 10px;
 }

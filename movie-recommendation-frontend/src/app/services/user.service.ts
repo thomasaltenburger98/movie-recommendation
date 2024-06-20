@@ -40,7 +40,6 @@ export class UserService {
       token: this.getToken()
     }).pipe(
       tap((response) => {
-        console.log(response);
         if (response.status === 200) {
           this.deleteToken();
           this.userID = -1;

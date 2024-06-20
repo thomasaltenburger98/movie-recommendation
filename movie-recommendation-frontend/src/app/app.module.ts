@@ -26,9 +26,11 @@ import {
   withInterceptorsFromDi
 } from "@angular/common/http";
 import { LoginComponent } from './login/login.component';
-import {MatButton} from "@angular/material/button";
+import {MatButton, MatButtonModule} from "@angular/material/button";
 import {RegisterComponent} from "./register/register.component";
 import {AuthInterceptorService} from "./auth-interceptor.service";
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatChipsModule} from "@angular/material/chips";
 
 @NgModule({ declarations: [
         AppComponent,
@@ -37,7 +39,9 @@ import {AuthInterceptorService} from "./auth-interceptor.service";
         LoginComponent,
         RegisterComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
         FormsModule,
         AppRoutingModule,
         CommonModule,
@@ -47,7 +51,12 @@ import {AuthInterceptorService} from "./auth-interceptor.service";
         MatFormFieldModule,
         MatInputModule,
         MatIconModule,
-        MatSidenavModule, MatButton], providers:
+        MatSidenavModule,
+        MatButton,
+        MatToolbarModule,
+        MatButtonModule,
+        MatCardModule,
+        MatChipsModule], providers:
     [
       provideHttpClient(withInterceptorsFromDi()),
       { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }

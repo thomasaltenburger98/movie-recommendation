@@ -1,0 +1,103 @@
+.detail-page {
+  padding: 20px 7.5vw;
+
+  h1.title {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 58px;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .movie-info {
+    display: flex;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+
+    img {
+      width: 200px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .details {
+      margin-left: 20px;
+
+      .tags {
+        margin-bottom: 10px;
+
+        mat-chip-list {
+          mat-chip {
+            margin-right: 5px;
+          }
+        }
+      }
+
+      mat-icon {
+        vertical-align: middle;
+        margin-right: 2px;
+      }
+
+      p {
+        margin: 5px 0;
+      }
+    }
+  }
+
+  .trailer {
+    margin: 20px 0;
+    text-align: center;
+
+    button {
+      font-size: 50px;
+    }
+  }
+
+  .cast {
+    margin: 20px 0;
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    mat-list {
+      .mat-list-item {
+        border-bottom: 1px solid #e0e0e0;
+
+        div[mat-line] {
+          display: inline-block;
+          width: 50%;
+        }
+      }
+    }
+  }
+
+  .similar-movies {
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .movie-list {
+      display: flex;
+      justify-content: space-between;
+
+      .movie-item {
+        text-align: center;
+
+        img {
+          width: 150px;
+          height: auto;
+          border-radius: 8px;
+        }
+
+        p {
+          margin: 10px 0 0;
+        }
+      }
+    }
+  }
+}

@@ -14,7 +14,19 @@ public class FilmService {
     private FilmRepository filmRepository;
 
     public List<Film> getAllFilms() {
-        return filmRepository.findAll();
+        List<Film> filmList = filmRepository.findAll();
+        // remove genres from each film to avoid circular references
+        filmList.forEach(film -> {
+            film.setGenres(null);
+        });
+        return filmList;
+    }
+
+    public List<Film> getFilmsByPage(int page) {
+        List<Film> allFilms = this.getAllFilms();
+        int start = (page - 1) * 5;
+        int end = Math.min(page * 5, allFilms.size());
+        return allFilms.subList(start, end);
     }
 
     public Film getFilmById(int id) {

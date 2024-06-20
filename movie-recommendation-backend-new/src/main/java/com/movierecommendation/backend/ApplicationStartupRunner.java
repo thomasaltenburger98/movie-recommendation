@@ -92,8 +92,8 @@ public class ApplicationStartupRunner implements CommandLineRunner {
                     Film film = new Film();
                     film.setId(Long.parseLong(filmData[0]));
                     film.setTitle(filmData[1]);
-                    film.setBeschreibung("");
-                    film.setErscheinungsjahr(new Date());
+                    //film.setBeschreibung("");
+                    //film.setErscheinungsjahr(new Date());
 
                     String[] genreNames = filmData[2].split("\\|");
                     List<Genre> genres = new ArrayList<>();

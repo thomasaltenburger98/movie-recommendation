@@ -1,22 +1,47 @@
 <div class="movie-list">
+  <div class="header">
+    <img class="logo" src="assets/logo.png">
+    <h2 class="headline">MovieMatcher</h2>
+  </div>
   <div class="search-bar">
     <input type="text" placeholder="Search" [(ngModel)]="searchString" (ngModelChange)="applyFilter()" />
   </div>
   <h2 *ngIf="searchString.length == 0">What movies do you like?</h2>
   <h2 *ngIf="searchString.length > 0">You are looking for "{{ searchString }}"?</h2>
   <div class="movie-item" *ngFor="let film of filteredFilms">
-    <img src="assets/avatar.jpg" alt="Avatar" />
     <div class="movie-details">
-      <h3>{{ film.title }}</h3>
-      <p>{{ film.erscheinungsjahr }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
+      <div *ngIf="film.isLoading"> <!-- Show skeleton screen if film details are loading -->
+        <div class="skeleton loading">
+          <img src="" alt="Avatar" />
+          <div class="skeleton-details">
+            <h3>{{ film.title }}</h3>
+            <p>{{ film.filmDetail?.release_date }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!film.isLoading"> <!-- Show film details if they are not loading -->
+        <div class="skeleton loaded">
+          <img src="{{ film.filmDetail.image_url }}" alt="Avatar" />
+          <div class="skeleton-details">
+            <h3>{{ film.title }}</h3>
+            <p>{{ getRuntimeAsTimeString(film.filmDetail?.release_date) }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
+            <div class="skeleton-line">Schauspieler: {{ getActorsAsString(film?.filmDetail?.credits?.cast) }}</div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="movie-actions">
       <button>more details</button>
       <button>add to watchlist</button>
     </div>
     <div class="movie-feedback">
-      <mat-icon>thumb_up</mat-icon>
-      <mat-icon>thumb_down</mat-icon>
+      <mat-icon (click)="likeMovie(film)">thumb_up</mat-icon>
+      <mat-icon (click)="dislikeMovie(film)">thumb_down</mat-icon>
       <!--<i class="thumbs-down"></i>
       <i class="thumbs-up"></i>-->
     </div>

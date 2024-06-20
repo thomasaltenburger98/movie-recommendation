@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {UserService} from "./user.service";
+import {UserService} from "./services/user.service";
 import {catchError, tap} from "rxjs";
 import {Router} from "@angular/router";
 
