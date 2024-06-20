@@ -30,7 +30,11 @@ public class FilmService {
     }
 
     public Film getFilmById(int id) {
-        return filmRepository.findById(id).orElse(null);
+        Film result = filmRepository.findById(id).orElse(null);
+        if (result != null) {
+            result.setGenres(null);
+        }
+        return result;
     }
 
     public Film saveFilm(Film film) {

@@ -27,7 +27,7 @@
           <img src="{{ film.filmDetail.image_url }}" alt="Avatar" />
           <div class="skeleton-details">
             <h3>{{ film.title }}</h3>
-            <p>{{ getRuntimeAsTimeString(film.filmDetail?.release_date) }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
+            <p>{{ getRuntimeAsTimeString(film.filmDetail?.runtime) }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
             <div class="skeleton-line">Schauspieler: {{ getActorsAsString(film?.filmDetail?.credits?.cast) }}</div>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>

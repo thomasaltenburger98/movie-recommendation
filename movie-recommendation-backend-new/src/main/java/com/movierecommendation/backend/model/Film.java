@@ -13,7 +13,7 @@ import java.util.List;
 public class Film {
     // Getters and Setters
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY) TODO check if this is needed
     private Long id;
 
     private String title;

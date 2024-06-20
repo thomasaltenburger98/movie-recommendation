@@ -1,8 +1,7 @@
 .detail-page {
-  padding: 20px 7.5vw;
+  padding: 20px 10.5vw;
 
   h1.title {
-    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 400;
     font-size: 48px;
@@ -12,20 +11,49 @@
     color: rgba(0, 0, 0, 0.5);
   }
 
+  h2 {
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 44px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
   .movie-info {
     display: flex;
     margin-top: 20px;
     padding: 20px;
     border-radius: 8px;
 
-    img {
-      width: 200px;
-      height: auto;
+    > img {
+      width: 100%;
+      height: 100%;
+      min-height: 21rem;
       border-radius: 8px;
+      flex: 0 0 30%;
+    }
+
+    .stars-wrapper {
+      flex: 1 0 auto;
+    }
+    .imdb-button-wrapper {
+      margin-top: 1rem;
+      width: 4rem;
+      height: 3rem;
+      a,
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
 
     .details {
-      margin-left: 20px;
+      margin-left: 2rem;
+      margin-right: 2rem;
+
+      .action-label {
+        font-weight: 400;
+        font-size: 20px;
+      }
 
       .tags {
         margin-bottom: 10px;
@@ -43,7 +71,14 @@
       }
 
       p {
-        margin: 5px 0;
+        margin: 25px 0;
+        font-size: 20px;
+        line-height: 24px;
+        color: #000000;
+      }
+      p.description {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
       }
     }
   }
@@ -64,19 +99,25 @@
       margin-bottom: 10px;
     }
 
-    mat-list {
-      .mat-list-item {
-        border-bottom: 1px solid #e0e0e0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
 
-        div[mat-line] {
-          display: inline-block;
-          width: 50%;
-        }
+      th {
+        text-align: left;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      td {
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
       }
     }
   }
 
   .similar-movies {
+    margin-top: 4rem;
     h2 {
       margin-bottom: 10px;
     }

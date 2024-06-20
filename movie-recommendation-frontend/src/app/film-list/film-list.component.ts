@@ -4,8 +4,8 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Film} from "../../models/Film";
 import {UserService} from "../services/user.service";
 import {Cast, FilmDetail} from "../../models/FilmDetail";
-import {getFilmTitleAndYearFromTitle} from "../utils/utils";
 import {RatingService} from "../services/rating.service";
+import { getRuntimeAsTimeString } from '../utils/utils';
 import {HttpClient} from "@angular/common/http";
 
 @Component({
@@ -56,9 +56,7 @@ export class FilmListComponent {
   loadFilms(page: number): void {
     this.isLoading = true;
     this.filmService.getFilmsPage(page).subscribe(films => {
-      console.log(films);
       this.films = films;
-      console.log(this.films);
       this.filteredFilms = this.films;
       this.getFilmDetailsForAllFilms();
 
@@ -137,11 +135,10 @@ export class FilmListComponent {
     }
     return this.getActors(values).slice(0, 6).map(cast => cast.name).join(', ') + '...';
   }
-  protected getRuntimeAsTimeString(runtime: string|undefined): string {
+  protected getRuntimeAsTimeString(runtime: number|undefined): string {
     if (runtime != undefined) {
-      const runTimeInt = parseInt(runtime);
-      const hours = Math.floor(runTimeInt / 60);
-      const minutes = runTimeInt % 60;
+      const hours = Math.floor(runtime / 60);
+      const minutes = runtime % 60;
       return `${hours}h ${minutes}min`;
     }
     return "";

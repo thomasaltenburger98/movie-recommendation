@@ -1,5 +1,5 @@
 <div class="detail-page">
-  <h1 class="title">Avatar</h1>
+  <h1 class="title">{{ film?.title }}</h1>
 
   <div class="movie-info">
     <img src="path-to-avatar-poster.jpg" alt="Avatar Movie Poster" mat-card-image>
@@ -11,6 +11,18 @@
           <mat-chip>Fantasy</mat-chip>
         </mat-chip-set>
       </div>
+      <p><strong>Erschienen am:</strong> {{ film?.filmDetail?.release_date }}</p>
+      <p><strong>Film dauert:</strong> {{ getRuntimeAsTimeString(film?.filmDetail?.runtime) }}</p>
+      <p class="description">
+        <strong>Beschreibung:</strong>
+        {{ film?.filmDetail?.overview }}
+      </p>
+      <p><strong>Regie:</strong> {{ getDirector(film?.filmDetail?.credits?.crew) }}</p>
+      <p><strong>Drehbuch:</strong> {{ getScreenplay(film?.filmDetail?.credits?.crew) }}</p>
+      <p *ngIf="film?.filmDetail?.adult === false"><span>Für Erwachsene und Kinder geeignet</span></p>
+      <p *ngIf="film?.filmDetail?.adult === true"><strong>Nur für Erwachsene geeignet</strong></p>
+    </div>
+    <div class="stars-wrapper">
       <div class="stars">
         <mat-icon color="warn">star</mat-icon>
         <mat-icon color="warn">star</mat-icon>
@@ -18,16 +30,11 @@
         <mat-icon color="warn">star</mat-icon>
         <mat-icon color="warn">star_half</mat-icon>
       </div>
-      <p><strong>Erschienen am:</strong> 2009</p>
-      <p><strong>Film dauert:</strong> 2h 42min</p>
-      <p>
-        Ein querschnittgelähmter US-Marinesoldat wird auf eine ganz besondere Mission zum Mond Pandora geschickt,
-        auf der er hin- und hergerissen ist, zwischen striktem Befehlsgehorsam und dem Wunsch, die Welt zu retten,
-        die seine neue Heimat ist.
-      </p>
-      <p><strong>Regie:</strong> ...</p>
-      <p><strong>Drehbuch:</strong> ...</p>
-      <p><strong>FSK:</strong> 12+</p>
+      <div class="imdb-button-wrapper" *ngIf="film?.filmDetail?.imdb_id">
+        <a href="https://www.imdb.com/title/{{ film?.filmDetail?.imdb_id }}" target="_blank">
+          <img src="assets/imdb-logo.png" alt="IMDB Logo" class="imdb-button">
+        </a>
+      </div>
     </div>
   </div>
 
@@ -39,12 +46,16 @@
 
   <div class="cast">
     <h2>Besetzung</h2>
-    <mat-list>
-      <mat-list-item *ngFor="let castMember of cast">
-        <div mat-line>{{ castMember.name }}</div>
-        <div mat-line>{{ castMember.role }}</div>
-      </mat-list-item>
-    </mat-list>
+    <table>
+      <tr>
+        <th>Schauspieler</th>
+        <th>Rolle</th>
+      </tr>
+      <tr *ngFor="let castMember of cast">
+        <td>{{ castMember.name }}</td>
+        <td>{{ castMember.role }}</td>
+      </tr>
+    </table>
   </div>
 
   <div class="similar-movies">

@@ -71,6 +71,7 @@ public class ApplicationStartupRunner implements CommandLineRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Tmdb data loaded");
     }
 
     private void loadFilmData() {
@@ -120,5 +121,6 @@ public class ApplicationStartupRunner implements CommandLineRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Film data loaded");
     }
 }
