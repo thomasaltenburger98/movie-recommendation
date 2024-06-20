@@ -1,10 +1,12 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
-import {FilmService} from "../film.service";
+import {FilmService} from "../services/film.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {Film} from "../../models/Film";
-import {UserService} from "../user.service";
-import {FilmDetail} from "../../models/FilmDetail";
+import {UserService} from "../services/user.service";
+import {Cast, FilmDetail} from "../../models/FilmDetail";
 import {getFilmTitleAndYearFromTitle} from "../utils/utils";
+import {RatingService} from "../services/rating.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-film-list',
@@ -28,45 +30,13 @@ export class FilmListComponent {
   //filteredFilms: Film[] = [];
   searchString: string = "";
   isLoading: boolean = false;
-  currentSearchTerm: string = '';
   currentMovieIndex = 0;
-  currentFilmDetail: FilmDetail = {
-    Title: "", Director: "", Poster: "", Rated: "", Year: ""
-  };
   progress = 0;
   currentCount = 0;
   totalCount = 10; // Gesamtzahl Ziel
   goalReached = false;
 
-  movies = [
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    },
-    {
-      title: 'Avatar',
-      year: 2009,
-      duration: '2h 42min',
-      rating: 'FSK 12+'
-    }
-  ];
-  filteredMovies: any[] = [];
-
-  constructor(private filmService: FilmService, private userService: UserService) { }
+  constructor(private http: HttpClient, private filmService: FilmService, private userService: UserService, private ratingService: RatingService) { }
 
   ngOnInit() {
     this.loadFilms(1);
@@ -90,6 +60,7 @@ export class FilmListComponent {
       this.films = films;
       console.log(this.films);
       this.filteredFilms = this.films;
+      this.getFilmDetailsForAllFilms();
 
       //this.getFilmDetails();
     });
@@ -100,56 +71,88 @@ export class FilmListComponent {
    */
   applyFilter(): void {
     if (this.searchString.length > 0) {
-      this.filteredMovies = this.movies.filter((film) =>
-        film.title.toLowerCase().includes(this.searchString.toLowerCase())
-      );
+      // TODO
     } else {
-      this.filteredMovies = this.movies;
+      // TODO
     }
   }
 
-  likeMovie(filmID: number, ratingValue: number) {
-    this.rateFilm(filmID, 1, ratingValue).subscribe(() => {
-      this.getRatingCount();
+  likeMovie(film: Film) {
+    this.isLoading = true;
+    this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
+      // TODO check if successful
+      /*this.filteredFilms = this.filteredFilms.filter((film) =>
+        film.id !== filmID
+      );*/
+      this.isLoading = false;
+    });
+  }
+
+  dislikeMovie(film: Film) {
+    this.isLoading = true;
+    this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
+      // TODO check if successful
+      /*this.filteredFilms = this.filteredFilms.filter((film) =>
+        film.id !== filmID
+      );*/
+      this.isLoading = false;
     });
   }
 
   previousMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex - 1 + this.filteredMovies.length) % this.filteredMovies.length;
-    this.getFilmDetails();
+
   }
 
   nextMovie() {
-    this.currentMovieIndex = (this.currentMovieIndex + 1) % this.filteredMovies.length;
-    this.getFilmDetails();
+
   }
 
-  getFilmDetails() {
-    let filmTitleAndYear = getFilmTitleAndYearFromTitle(this.filteredMovies[this.currentMovieIndex].title);
-    let filmTitle = filmTitleAndYear.filmTitle;
-    let filmYear = filmTitleAndYear.filmYear;
+  getFilmDetails(filmId: number, index: number) {
+    this.filteredFilms[index].isLoading = true;
 
-    this.isLoading = true;
-    /*this.filmDetailService.getFilmDetailByTitleAndYear(filmTitle,filmYear).subscribe(filmDetail => {
-      this.currentFilmDetail = filmDetail;
-      this.isLoading = false;
-    });*/
+    // wait 5 seconds here
+    setTimeout(() => {
+      this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
+        console.log(filmDetail);
+        this.filteredFilms[index].filmDetail = filmDetail;
+        //console.log(this.filteredFilms[index]);
+        this.filteredFilms[index].isLoading = false;
+        console.log(this.filteredFilms);
+      });
+    }, 2000);
   }
+
+  getFilmDetailsForAllFilms(): void {
+    this.filteredFilms.forEach((film, index) => {
+      this.getFilmDetails(film.id, index);
+    });
+  }
+
+  private getActors(values: Cast[]): Cast[] {
+    return values.filter(cast => cast.known_for_department === 'Acting');
+  }
+  protected getActorsAsString(values: Cast[]|undefined): string {
+    if (!values) {
+      return '';
+    }
+    return this.getActors(values).slice(0, 6).map(cast => cast.name).join(', ') + '...';
+  }
+  protected getRuntimeAsTimeString(runtime: string|undefined): string {
+    if (runtime != undefined) {
+      const runTimeInt = parseInt(runtime);
+      const hours = Math.floor(runTimeInt / 60);
+      const minutes = runTimeInt % 60;
+      return `${hours}h ${minutes}min`;
+    }
+    return "";
+  }
+
    getRatingCount() {
-      this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
+      /*this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
         this.currentCount = count;
         this.updateProgress();
-      });
+      });*/
     }
-
-  rateFilm(filmId: number, userId: number, ratingValue: number) {
-    const rating = {
-      filmId: filmId,
-      userId: userId,
-      ratingValue: ratingValue
-    };
-    return this.http.post<void>(this.baseUrl, rating);
-  }
 
   updateProgress() {
     this.progress = (this.currentCount / this.totalCount) * 100;
@@ -159,4 +162,14 @@ export class FilmListComponent {
   onGoalReached() {
     console.log('Ziel erreicht!');
   }
+
+  getFunctionNames(obj: any): string[] {
+    if (!obj) {
+      return [];
+    }
+
+    const prototype = Object.getPrototypeOf(obj);
+    return Object.getOwnPropertyNames(prototype);
+  }
+
 }
