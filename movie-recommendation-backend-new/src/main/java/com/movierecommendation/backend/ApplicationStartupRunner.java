@@ -1,11 +1,15 @@
 package com.movierecommendation.backend;
 
+import com.movierecommendation.backend.factory.FilmFactory;
+import com.movierecommendation.backend.repository.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
 import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.model.Genre;
+import com.movierecommendation.backend.model.Rating;
 import com.movierecommendation.backend.model.User;
-import com.movierecommendation.backend.repository.FilmRepository;
-import com.movierecommendation.backend.repository.GenreRepository;
-import com.movierecommendation.backend.repository.UserRepository;
 import com.movierecommendation.backend.service.AuthService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.Reader;
 import java.util.*;
 
 @Component
@@ -26,6 +31,15 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     private GenreRepository genreRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RatingRepository ratingRepository;
+
+    @Autowired
+    private TokenRepository tokenRepository;
+
+    @Autowired
     private AuthService authService;
 
     private Map<Long, Long> filmTmbdAssociation = new HashMap<>();
@@ -33,9 +47,23 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        addTestUser();
+        clearDatabase();
+        long count = filmRepository.count();
+        System.out.println("count of films: " + count);
         loadTmdbData();
         loadFilmData();
+        loadRatingData();
+        addTestUser();
+    }
+
+    public void clearDatabase() {
+        System.out.println("Clearing database");
+        ratingRepository.deleteAllEntities();
+        genreRepository.deleteAllEntities();
+        filmRepository.deleteAllEntities();
+        userRepository.deleteAllEntities();
+        tokenRepository.deleteAllEntities();
+        System.out.println("Database cleared");
     }
 
     private void addTestUser() {
@@ -50,23 +78,22 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     private void loadTmdbData() {
         System.out.println("Loading tmdb data");
         String csvFile = "../ml-latest-small/links.csv";
-        String line;
-        String csvSplitBy = ",";
-        int i = 1;
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            // Skip the header line
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                if (i > 1000) {
-                    break;
-                }
+        try (Reader in = new FileReader(csvFile)) {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            int i = 1;
+            for (CSVRecord record : records) {
+//                if (i > 1000) {
+//                    break;
+//                }
                 i++;
-                String[] filmData = line.split(csvSplitBy);
-                if (filmData.length == 3) {
-                    Long filmId = Long.parseLong(filmData[0]);
-                    Long tmdbId = Long.parseLong(filmData[2]);
-                    filmTmbdAssociation.put(filmId, tmdbId);
+                if (record.get("tmdbId").isEmpty()) {
+                    continue;
                 }
+                Long filmId = Long.parseLong(record.get("movieId"));
+                Long tmdbId = Long.parseLong(record.get("tmdbId"));
+                filmTmbdAssociation.put(filmId, tmdbId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,50 +104,91 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     private void loadFilmData() {
         System.out.println("Loading film data");
         String csvFile = "../ml-latest-small/movies.csv";
-        String line;
-        String csvSplitBy = ",";
-        int i = 1;
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            // Skip the header line
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                if (i > 1000) {
-                    break;
-                }
+        try (Reader in = new FileReader(csvFile)) {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            int i = 1;
+            FilmFactory filmFactory = new FilmFactory();
+            Map<String, Genre> genreMap = new HashMap<>();
+            genreRepository.findAll().forEach(genre -> genreMap.put(genre.getName(), genre));
+            for (CSVRecord record : records) {
+//                if (i > 1000) {
+//                    break;
+//                }
                 i++;
-                String[] filmData = line.split(csvSplitBy);
-                if (filmData.length == 3) {
-                    Film film = new Film();
-                    film.setId(Long.parseLong(filmData[0]));
-                    film.setTitle(filmData[1]);
-                    //film.setBeschreibung("");
-                    //film.setErscheinungsjahr(new Date());
-
-                    String[] genreNames = filmData[2].split("\\|");
-                    List<Genre> genres = new ArrayList<>();
-                    for (String genreName : genreNames) {
-                        Genre genre = genreRepository.findByName(genreName);
-                        if (genre == null) {
-                            genre = new Genre();
-                            genre.setName(genreName);
-                            genreRepository.save(genre);
+                Film film = filmFactory.createFromRecord(record, genreMap);
+                List<Genre> unsavedGenres = new ArrayList<>();
+                for (Genre genre: film.getGenres()) {
+                    if (!genreMap.containsKey(genre.getName())) {
+                        genreMap.put(genre.getName(), genre);
+                        if (genre.getId() == null) {
+                            unsavedGenres.add(genre);
                         }
-                        genres.add(genre);
                     }
-                    film.setGenres(genres);
-
-                    // set TMDB id from filmTmbdAssociation
-                    Long tmdbId = filmTmbdAssociation.get(film.getId());
-                    if (tmdbId != null) {
-                        film.setTmdbId(tmdbId);
-                    }
-
-                    filmRepository.save(film);
                 }
+                if (!unsavedGenres.isEmpty()) {
+                    genreRepository.saveAll(unsavedGenres);
+                }
+                Long tmdbId = filmTmbdAssociation.get(film.getId());
+                if (tmdbId != null) {
+                    film.setTmdbId(tmdbId);
+                }
+                filmRepository.save(film);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Film data loaded");
     }
+
+    private void loadRatingData() {
+        System.out.println("Loading rating data");
+        String csvFile = "../ml-latest-small/ratings.csv";
+        Map<Long, User> userMap = new HashMap<>();
+
+        try (Reader in = new FileReader(csvFile)) {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            int i = 1;
+            for (CSVRecord record : records) {
+//                if (i > 1000) {
+//                    break;
+//                }
+                i++;
+                Long userId = Long.parseLong(record.get("userId"));
+                User user;
+                if (!userMap.containsKey(userId)) {
+                    user = addUser("user" + userId, userId);
+                    userMap.put(userId, user);
+                } else {
+                    user = userMap.get(userId);
+                }
+
+                Long filmId = Long.parseLong(record.get("movieId"));
+                float ratingValue = Float.parseFloat(record.get("rating"));
+                Rating rating = new Rating();
+                rating.setUser(user);
+                Film film = filmRepository.findById(filmId.intValue()).orElse(null);
+                rating.setFilm(film);
+                rating.setRatingValue(ratingValue);
+                ratingRepository.save(rating);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Rating data loaded");
+    }
+
+    private User addUser(String username, long userID) {
+        User user = new User();
+        // TODO set canLogin to false
+        user.setUsername(username);
+        user.setPassword("#" + username);
+        userRepository.save(user);
+        return user;
+    }
+
 }

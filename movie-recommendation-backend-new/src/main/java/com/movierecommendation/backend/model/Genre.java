@@ -10,9 +10,10 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "genres")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "genres")
     private List<Film> films;
 
     // Getters and Setters
