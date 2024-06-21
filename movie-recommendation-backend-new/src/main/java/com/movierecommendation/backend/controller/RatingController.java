@@ -1,7 +1,9 @@
 package com.movierecommendation.backend.controller;
 
+import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.model.Rating;
 import com.movierecommendation.backend.model.User;
+import com.movierecommendation.backend.repository.FilmRepository;
 import com.movierecommendation.backend.repository.RatingRepository;
 import com.movierecommendation.backend.service.AuthService;
 import com.movierecommendation.backend.service.RatingService;
@@ -21,6 +23,8 @@ public class RatingController {
     @Autowired
     private RatingRepository ratingRepository;
     @Autowired
+    private FilmRepository filmRepository;
+    @Autowired
     private AuthService authService;
 
     @GetMapping
@@ -34,15 +38,19 @@ public class RatingController {
     }
 
     @PostMapping
-    public Rating store(@RequestBody Map<String, String> body) {
+    public Map<String, String> store(@RequestBody Map<String, String> body) {
         String filmId = body.get("film_id");
         String ratingValue = body.get("rating_value");
-        Rating rating = null;
+        User user = authService.getUserByUsername(authService.getCurrentUsername());
+        Film film = filmRepository.findById(Integer.parseInt(filmId)).orElse(null);
 
-        // TODO: Get user id and add to rating
+        Rating rating = new Rating();
+        rating.setUser(user);
+        rating.setFilm(film);
+        rating.setRatingValue(Integer.parseInt(ratingValue));
 
-        // Save the rating
-        return ratingRepository.save(rating);
+        ratingRepository.save(rating);
+        return Map.of("message", "Rating created successfully");
     }
 
     @PutMapping("/{id}")

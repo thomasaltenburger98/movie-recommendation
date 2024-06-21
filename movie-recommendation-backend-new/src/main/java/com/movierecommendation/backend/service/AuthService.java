@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,6 +39,18 @@ public class AuthService implements UserDetailsService {
         }
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public Long getUserIdByUsername(String username) {
+        return userRepository.findIdByUsername(username);
+    }
+
+    public String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
     public User authenticate(String username, String password) {

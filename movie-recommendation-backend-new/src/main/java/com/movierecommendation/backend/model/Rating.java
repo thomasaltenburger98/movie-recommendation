@@ -1,6 +1,8 @@
 package com.movierecommendation.backend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -10,37 +12,25 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "film_id")
     private Film film;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Getter
+    @Setter
     private float ratingValue;
+
+    @Setter
     private Date erstelltAm;
     private Date aktualisiertAm;
 
-    // Getters and Setters
-    public void setFilm(Film film) {
-        this.film = film;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setRatingValue(float ratingValue) {
-        this.ratingValue = ratingValue;
-    }
-
-    public void setErstelltAm(Date erstelltAm) {
-        this.erstelltAm = erstelltAm;
-    }
-
-    public float getRatingValue() {
-        return ratingValue;
-    }
 }
 

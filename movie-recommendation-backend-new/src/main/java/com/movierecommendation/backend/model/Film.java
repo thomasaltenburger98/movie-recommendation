@@ -1,5 +1,6 @@
 package com.movierecommendation.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,9 +23,11 @@ public class Film {
     private int bewertung;
     private Long tmdbId;
 
+    @JsonIgnore
     @ManyToMany
     private List<Genre> genres;
 
+    @JsonIgnore
     @ManyToMany
     private List<User> users;
 }

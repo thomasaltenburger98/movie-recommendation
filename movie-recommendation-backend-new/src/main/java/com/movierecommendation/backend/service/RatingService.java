@@ -29,6 +29,11 @@ public class RatingService {
         return ratingRepository.findAllByUserId(userId);
     }
 
+    public List<Rating> getPositiveRatedFilmOfUser(int userId) {
+        // TODO use sql query instead of stream
+        return this.getAllRatedFilmOfUser(userId).stream().filter(rating -> rating.getRatingValue() > 3).toList();
+    }
+
     public long getRatingCount() {
         return ratingRepository.count();
     }
