@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FilmService} from "../services/film.service";
 import {Film} from "../../models/Film";
-import {getRuntimeAsTimeString} from "../utils/utils";
+import {getCastsOfFilm, getRuntimeAsTimeString} from "../utils/utils";
 import { getDirectorOfCrew } from "../utils/utils";
 import { getScreenplayOfCrew } from "../utils/utils";
-import {Crew} from "../../models/FilmDetail";
+import {Cast, Crew} from "../../models/FilmDetail";
 
 @Component({
   selector: 'app-film-details',
@@ -16,14 +16,7 @@ export class FilmDetailsComponent {
 
   film: Film | undefined;
 
-  cast = [
-    { name: 'Sam Worthiness', role: 'Jake Sully' },
-    { name: 'Sam Worthington', role: 'Jake Sully' },
-    { name: 'Sam Worthington', role: 'Jake Sully' },
-    { name: 'Sam Worthington', role: 'Jake Sully' },
-    { name: 'Sam Worthington', role: 'Jake Sully' },
-    { name: 'Sam Worthington', role: 'Jake Sully' },
-  ];
+  casts: Cast[] = [];
 
   similarMovies = [
     { img: 'path-to-similar-movie-1.jpg', title: 'Film 1' },
@@ -43,6 +36,7 @@ export class FilmDetailsComponent {
           if (this.film !== undefined) {
             this.film.filmDetail = filmDetail;
             console.log(this.film);
+            this.casts = getCastsOfFilm(filmDetail.credits.cast);
           }
         });
       });

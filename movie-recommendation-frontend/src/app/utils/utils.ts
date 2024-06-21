@@ -1,4 +1,4 @@
-import {Crew} from "../../models/FilmDetail";
+import {Cast, Crew} from "../../models/FilmDetail";
 
 export function getFilmTitleAndYearFromTitle(title: string): { filmTitle: string, filmYear: string } {
   let filmYear = '';
@@ -33,7 +33,7 @@ export function getScreenplayOfCrew(crew: Crew[]): string {
   return screenplay.map(screenplay => screenplay.name).slice(0, 5).join(', ');
 }
 
-export function getCastsOfFilm(casts: any[]): string {
-  // filter by known_for_department = acting & get 5 acts & concat all cast names
-  return casts.filter(cast => cast.known_for_department === 'Acting').slice(0, 5).map(cast => cast.name).join(', ');
+export function getCastsOfFilm(casts: any[]): Cast[] {
+  // filter by known_for_department = acting & get 5 acts
+  return casts.filter(cast => cast.known_for_department === 'Acting').slice(0, 10);
 }

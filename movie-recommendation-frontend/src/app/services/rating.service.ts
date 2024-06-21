@@ -11,10 +11,9 @@ export class RatingService {
   constructor(private http: HttpClient) { }
 
   rateFilm(filmID: number, ratingValue: number): Observable<any> {
-    // TODO: add ratingValue to request body
     const response = this.http.post(this.apiUrl, {
       film_id: filmID,
-      rating: ratingValue
+      rating_value: ratingValue
     });
 
     return response;

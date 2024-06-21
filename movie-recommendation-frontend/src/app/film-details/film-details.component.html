@@ -45,15 +45,15 @@
   </div>
 
   <div class="cast">
-    <h2>Besetzung</h2>
+    <h2>Besetzung <small>- Top 10</small></h2>
     <table>
       <tr>
         <th>Schauspieler</th>
         <th>Rolle</th>
       </tr>
-      <tr *ngFor="let castMember of cast">
+      <tr *ngFor="let castMember of casts">
         <td>{{ castMember.name }}</td>
-        <td>{{ castMember.role }}</td>
+        <td>{{ castMember.character }}</td>
       </tr>
     </table>
   </div>

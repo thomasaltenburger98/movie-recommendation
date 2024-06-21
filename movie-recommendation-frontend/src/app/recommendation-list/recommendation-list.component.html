@@ -15,7 +15,7 @@
           <img src="" alt="Avatar" />
           <div class="skeleton-details">
             <h3>{{ film.title }}</h3>
-            <p></p>
+            <p>{{ film?.filmDetail?.release_date }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>
@@ -27,7 +27,7 @@
           <img src="{{ film.filmDetail.image_url }}" alt="Avatar" />
           <div class="skeleton-details">
             <h3>{{ film.title }}</h3>
-            <p>{{ getRuntimeAsTimeString(film?.filmDetail?.runtime) }} &middot; {{ film.bewertung }}</p>
+            <p>{{ getRuntimeAsTimeString(film?.filmDetail?.runtime) }} &middot; 1h 30min &middot; {{ film.bewertung }}</p>
             <div class="skeleton-line">Schauspieler: {{ getActorsAsString(film?.filmDetail?.credits?.cast) }}</div>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>
@@ -39,18 +39,7 @@
       <button>more details</button>
       <button>add to watchlist</button>
     </div>
-    <div class="movie-feedback">
-      <mat-icon (click)="likeMovie(film)">thumb_up</mat-icon>
-      <mat-icon (click)="dislikeMovie(film)">thumb_down</mat-icon>
-      <!--<i class="thumbs-down"></i>
-      <i class="thumbs-up"></i>-->
-    </div>
   </div>
-  <div *ngIf="!goalReached" class="progress-bar">
-    <div class="progress-bar-fill" [ngStyle]="{'width.%': progress * 100}"></div>
-  </div>
-  <div *ngIf="!goalReached" class="progress-label">{{ currentCount }}/{{ totalCount }}</div>
-  <button *ngIf="goalReached" (click)="onGoalReached()">Weiter zu meinen Empfehlungen</button>
 </div>
 
 <!--TODO: Add pagination-->

@@ -1,30 +1,29 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
-import {FilmService} from "../services/film.service";
-import {animate, state, style, transition, trigger} from "@angular/animations";
+import { Component } from '@angular/core';
+import {MatIcon} from "@angular/material/icon";
+import {NgForOf, NgIf} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Film} from "../../models/Film";
-import {UserService} from "../services/user.service";
-import {Cast, FilmDetail} from "../../models/FilmDetail";
-import {RatingService} from "../services/rating.service";
-import { getRuntimeAsTimeString } from '../utils/utils';
 import {HttpClient} from "@angular/common/http";
+import {FilmService} from "../services/film.service";
+import {UserService} from "../services/user.service";
+import {RatingService} from "../services/rating.service";
+import {Cast} from "../../models/FilmDetail";
+import {RecommendationService} from "../services/recommendation.service";
 
 @Component({
-  selector: 'app-film-list',
-  templateUrl: './film-list.component.html',
-  styleUrls: ['./film-list.component.scss'],
-  animations: [
-    trigger('fadeAnimation', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('400ms ease-in-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [
-        animate('400ms ease-in-out', style({ opacity: 0 }))
-      ])
-    ])
-  ]
+  selector: 'app-recommendation-list',
+  standalone: true,
+  imports: [
+    MatIcon,
+    NgForOf,
+    NgIf,
+    ReactiveFormsModule,
+    FormsModule
+  ],
+  templateUrl: './recommendation-list.component.html',
+  styleUrl: './recommendation-list.component.scss'
 })
-export class FilmListComponent {
+export class RecommendationListComponent {
   films: Film[] = [];
   filteredFilms: Film[] = [];
   //filteredFilms: Film[] = [];
@@ -36,26 +35,23 @@ export class FilmListComponent {
   totalCount = 10; // Gesamtzahl Ziel
   goalReached = false;
 
-  constructor(private http: HttpClient, private filmService: FilmService, private userService: UserService, private ratingService: RatingService) { }
+  constructor(private http: HttpClient,
+              private filmService: FilmService,
+              private recommendationService: RecommendationService,
+              private userService: UserService,
+              private ratingService: RatingService) { }
 
   ngOnInit() {
-    this.loadFilms(1);
+    this.loadFilms();
     this.getRatingCount();
-    //this.filteredMovies = this.movies;
-    /*this.isLoading = true;
-    this.filmService.getFilms().subscribe(films => {
-      this.films = films;
-      console.log(this.films);
-      this.filteredFilms = this.films;
-
-      this.getFilmDetails();
-    });*/
   }
 
   // Load film by pagination
-  loadFilms(page: number): void {
+  loadFilms(): void {
+    console.log('loadFilms');
     this.isLoading = true;
-    this.filmService.getFilmsPage(page).subscribe(films => {
+    this.recommendationService.getRecommendedFilms().subscribe(films => {
+      console.log(films);
       this.films = films;
       this.filteredFilms = this.films;
       this.getFilmDetailsForAllFilms();
@@ -144,12 +140,12 @@ export class FilmListComponent {
     return "";
   }
 
-   getRatingCount() {
-      /*this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
-        this.currentCount = count;
-        this.updateProgress();
-      });*/
-    }
+  getRatingCount() {
+    /*this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
+      this.currentCount = count;
+      this.updateProgress();
+    });*/
+  }
 
   updateProgress() {
     this.progress = (this.currentCount / this.totalCount) * 100;
@@ -168,5 +164,4 @@ export class FilmListComponent {
     const prototype = Object.getPrototypeOf(obj);
     return Object.getOwnPropertyNames(prototype);
   }
-
 }
