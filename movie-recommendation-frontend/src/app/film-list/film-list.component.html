@@ -8,13 +8,13 @@
   </div>
   <h2 *ngIf="searchString.length == 0">What movies do you like?</h2>
   <h2 *ngIf="searchString.length > 0">You are looking for "{{ searchString }}"?</h2>
-  <div class="movie-item" *ngFor="let film of filteredFilms">
+  <div class="movie-item" *ngFor="let film of films">
     <div class="movie-details">
       <div *ngIf="film.isLoading"> <!-- Show skeleton screen if film details are loading -->
         <div class="skeleton loading">
           <img src="" alt="Avatar" />
           <div class="skeleton-details">
-            <h3>{{ film.title }}</h3>
+            <h3>{{ film?.title }}</h3>
             <p></p>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>
@@ -24,10 +24,10 @@
       </div>
       <div *ngIf="!film.isLoading"> <!-- Show film details if they are not loading -->
         <div class="skeleton loaded">
-          <img src="{{ film.filmDetail.image_url }}" alt="Avatar" />
+          <img src="{{ film?.filmDetail?.image_url }}" alt="Avatar" />
           <div class="skeleton-details">
-            <h3>{{ film.title }}</h3>
-            <p>{{ getRuntimeAsTimeString(film?.filmDetail?.runtime) }} &middot; {{ film.bewertung }}</p>
+            <h3>{{ film?.title }}</h3>
+            <p>{{ getRuntimeAsTimeString(film?.filmDetail?.runtime) }} &middot; {{ film?.bewertung }}</p>
             <div class="skeleton-line">Schauspieler: {{ getActorsAsString(film?.filmDetail?.credits?.cast) }}</div>
             <div class="skeleton-line"></div>
             <div class="skeleton-line"></div>
@@ -36,12 +36,12 @@
       </div>
     </div>
     <div class="movie-actions">
-      <button>more details</button>
+      <a mat-button routerLink="/film/{{film.id}}">more details</a>
       <button>add to watchlist</button>
     </div>
     <div class="movie-feedback">
-      <mat-icon (click)="likeMovie(film)">thumb_up</mat-icon>
-      <mat-icon (click)="dislikeMovie(film)">thumb_down</mat-icon>
+      <mat-icon [class.icon-liked]="film.isUserLiked" (click)="likeMovie(film)">thumb_up</mat-icon>
+      <mat-icon [class.icon-liked]="film.isUserDisliked" (click)="dislikeMovie(film)">thumb_down</mat-icon>
       <!--<i class="thumbs-down"></i>
       <i class="thumbs-up"></i>-->
     </div>

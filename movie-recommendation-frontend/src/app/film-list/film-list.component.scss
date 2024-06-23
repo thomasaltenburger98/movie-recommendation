@@ -1,6 +1,10 @@
 .movie-list {
   padding: 0px 80px;
 
+  .icon-liked {
+    color: #ff9800 !important;
+  }
+
   .header {
     display: block;
     height: 100%;
@@ -90,6 +94,7 @@
 
     .movie-actions {
       margin-right: 12px;
+      a,
       button {
         margin-right: 10px;
         padding: 10px 20px;

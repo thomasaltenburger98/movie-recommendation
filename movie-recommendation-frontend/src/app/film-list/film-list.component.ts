@@ -26,10 +26,10 @@ import {HttpClient} from "@angular/common/http";
 })
 export class FilmListComponent {
   films: Film[] = [];
-  filteredFilms: Film[] = [];
   //filteredFilms: Film[] = [];
   searchString: string = "";
   isLoading: boolean = false;
+  timeoutFilmDetails: any;
   currentMovieIndex = 0;
   progress = 0;
   currentCount = 0;
@@ -57,9 +57,10 @@ export class FilmListComponent {
     this.isLoading = true;
     this.filmService.getFilmsPage(page).subscribe(films => {
       this.films = films;
-      this.filteredFilms = this.films;
+      console.log('loadFilms');
+      console.log(this.films);
       this.getFilmDetailsForAllFilms();
-
+      this.isLoading = false;
       //this.getFilmDetails();
     });
   }
@@ -68,10 +69,28 @@ export class FilmListComponent {
    * used to search in film list
    */
   applyFilter(): void {
+    if (typeof this.timeoutFilmDetails === "number") {
+      clearTimeout(this.timeoutFilmDetails);
+    }
     if (this.searchString.length > 0) {
-      // TODO
+      this.isLoading = true;
+      console.log(this.searchString);
+      this.filmService.getFilmsPageAndFilterByTitle(1, this.searchString).subscribe(films => {
+        this.films = films;
+        // set isLoading to true for all films
+        this.films.forEach(film => film.isLoading = true);
+        this.isLoading = false;
+        this.timeoutFilmDetails = setTimeout(() => {
+          this.getFilmDetailsForAllFilms();
+        }, 500);
+        //this.getFilmDetails();
+      });
     } else {
-      // TODO
+      this.loadFilms(1);
+      this.films.forEach(film => film.isLoading = true);
+      this.timeoutFilmDetails = setTimeout(() => {
+        this.getFilmDetailsForAllFilms();
+      }, 500);
     }
   }
 
@@ -82,6 +101,7 @@ export class FilmListComponent {
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
+      film.isUserLiked = true;
       this.isLoading = false;
     });
   }
@@ -93,6 +113,7 @@ export class FilmListComponent {
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
+      film.isUserLiked = false;
       this.isLoading = false;
     });
   }
@@ -106,22 +127,22 @@ export class FilmListComponent {
   }
 
   getFilmDetails(filmId: number, index: number) {
-    this.filteredFilms[index].isLoading = true;
+    this.films[index].isLoading = true;
 
     // wait 5 seconds here
     setTimeout(() => {
       this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
         console.log(filmDetail);
-        this.filteredFilms[index].filmDetail = filmDetail;
+        this.films[index].filmDetail = filmDetail;
         //console.log(this.filteredFilms[index]);
-        this.filteredFilms[index].isLoading = false;
-        console.log(this.filteredFilms);
+        this.films[index].isLoading = false;
+        console.log(this.films);
       });
     }, 500);
   }
 
   getFilmDetailsForAllFilms(): void {
-    this.filteredFilms.forEach((film, index) => {
+    this.films.forEach((film, index) => {
       this.getFilmDetails(film.id, index);
     });
   }

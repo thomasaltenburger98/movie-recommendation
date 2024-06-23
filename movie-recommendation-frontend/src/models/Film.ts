@@ -8,6 +8,8 @@ export class Film {
   bewertung: number;
   isLoading: boolean;
   filmDetail: FilmDetail;
+  isUserLiked: boolean;
+  isUserDisliked: boolean;
 
 constructor() {
     this.id = 0;
@@ -15,7 +17,9 @@ constructor() {
     this.beschreibung = '';
     //this.erscheinungsjahr = 0;
     this.bewertung = 0;
-    this.isLoading = false;
+    this.isLoading = true;
+    this.isUserLiked = false;
+    this.isUserDisliked = false;
     this.filmDetail = new FilmDetail();
   }
 
