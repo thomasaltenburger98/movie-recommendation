@@ -15,6 +15,8 @@ public class RatingService {
 
     @Autowired
     private RatingRepository ratingRepository;
+    @Autowired
+    private CSVDataManager csvDataManager;
 
     public void rateFilm(int filmId, int userId, int ratingValue) {
         Rating rating = new Rating();
@@ -25,17 +27,37 @@ public class RatingService {
         ratingRepository.save(rating);
     }
 
+    public Rating saveRating(Rating rating) {
+        Rating savedRating = ratingRepository.save(rating);
+        csvDataManager.writeRatingToCSV(savedRating);
+        return savedRating;
+    }
+    public void deleteRatingById(long id) {
+        // TODO delete rating from CSV file
+        ratingRepository.deleteById(id);
+    }
+
     public List<Rating> getAllRatedFilmOfUser(int userId) {
         return ratingRepository.findAllByUserId(userId);
+    }
+    public List<Rating> getAllRatedFilmOfUser(String username) {
+        return ratingRepository.findAllByUserUsername(username);
     }
 
     public List<Rating> getPositiveRatedFilmOfUser(int userId) {
         // TODO use sql query instead of stream
         return this.getAllRatedFilmOfUser(userId).stream().filter(rating -> rating.getRatingValue() > 3).toList();
     }
+    public List<Rating> getPositiveRatedFilmOfUser(String username) {
+        // TODO use sql query instead of stream
+        return this.getAllRatedFilmOfUser(username).stream().filter(rating -> rating.getRatingValue() > 3).toList();
+    }
 
-    public long getRatingCount() {
-        return ratingRepository.count();
+    public long getRatingCount(int userId) {
+        return getAllRatedFilmOfUser(userId).size();
+    }
+    public long getRatingCount(String username) {
+        return getAllRatedFilmOfUser(username).size();
     }
 }
 

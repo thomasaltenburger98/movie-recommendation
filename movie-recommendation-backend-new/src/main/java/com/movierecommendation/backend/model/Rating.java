@@ -32,5 +32,15 @@ public class Rating {
     private Date erstelltAm;
     private Date aktualisiertAm;
 
+    public Rating() {
+        this.erstelltAm = new Date();
+        this.aktualisiertAm = new Date();
+    }
+
+    public String toCSVString() {
+        long timestamp = this.erstelltAm.getTime();
+        return this.user.getId() + "," + this.film.getId() + "," + this.ratingValue + "," + timestamp;
+    }
+
 }
 

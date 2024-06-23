@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface RatingRepository extends JpaRepository<Rating, Long> {
     java.util.List<Rating> findAllByUserId(int userId);
+    java.util.List<Rating> findAllByUserUsername(String username);
 
     @Modifying
     @Query("DELETE FROM Rating")

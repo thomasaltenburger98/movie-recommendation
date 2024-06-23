@@ -23,6 +23,8 @@ public class RatingController {
     @Autowired
     private RatingRepository ratingRepository;
     @Autowired
+    private RatingService ratingService;
+    @Autowired
     private FilmRepository filmRepository;
     @Autowired
     private AuthService authService;
@@ -49,7 +51,7 @@ public class RatingController {
         rating.setFilm(film);
         rating.setRatingValue(Integer.parseInt(ratingValue));
 
-        ratingRepository.save(rating);
+        ratingService.saveRating(rating);
         return Map.of("message", "Rating created successfully");
     }
 
@@ -58,13 +60,18 @@ public class RatingController {
         Rating existingRating = ratingRepository.findById(id).orElse(null);
         if (existingRating != null) {
             existingRating.setRatingValue(rating.getRatingValue());
-            return ratingRepository.save(existingRating);
+            return ratingService.saveRating(existingRating);
         }
         return null;
     }
 
     @DeleteMapping("/{id}")
     public void destroy(@PathVariable Long id) {
-        ratingRepository.deleteById(id);
+        ratingService.deleteRatingById(id);
+    }
+
+    @GetMapping("/count")
+    public long getRatingCount() {
+        return ratingService.getRatingCount(authService.getCurrentUsername());
     }
 }

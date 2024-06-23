@@ -77,6 +77,7 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadTmdbData() {
         System.out.println("Loading tmdb data");
+        // TODO use CSVDataManager to get file path
         String csvFile = "../ml-latest-small/links.csv";
         try (Reader in = new FileReader(csvFile)) {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
@@ -103,6 +104,7 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadFilmData() {
         System.out.println("Loading film data");
+        // TODO use CSVDataManager to get file path
         String csvFile = "../ml-latest-small/movies.csv";
         try (Reader in = new FileReader(csvFile)) {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
@@ -144,6 +146,7 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadRatingData() {
         System.out.println("Loading rating data");
+        // TODO use CSVDataManager to get file path
         String csvFile = "../ml-latest-small/ratings.csv";
         Map<Long, User> userMap = new HashMap<>();
 

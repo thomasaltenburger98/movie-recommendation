@@ -31,10 +31,10 @@ public class RecommendationController {
     public List<Film> getRecommendationsForCurrentUser() {
         System.out.println("RecommendationController.getRecommendationsForCurrentUser");
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // TODO!! -> new user should get user-id that is greater than last user-id in ratings.csv
-        int userId = authService.getUserIdByUsername(authService.getCurrentUsername()).intValue();
-        System.out.println("userId: " + userId);
-        List<Rating> ratedFilms = ratingService.getPositiveRatedFilmOfUser(userId);
+
+        //int userId = authService.getUserIdByUsername(authService.getCurrentUsername()).intValue();
+        //System.out.println("userId: " + userId);
+        List<Rating> ratedFilms = ratingService.getPositiveRatedFilmOfUser(authService.getCurrentUsername());
         System.out.println("ratedFilms: " + ratedFilms.size());
         List<Film> list = recommendationService.getRecommendedFilms(ratedFilms);
         System.out.println("list: " + list.size());
