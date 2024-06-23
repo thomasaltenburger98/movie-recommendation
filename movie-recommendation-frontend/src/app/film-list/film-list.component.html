@@ -46,6 +46,13 @@
       <i class="thumbs-up"></i>-->
     </div>
   </div>
+  <!-- Load more button -->
+  <div class="load-more" *ngIf="!allFilmsLoaded">
+    <div class="load-more-button-wrapper">
+      <button mat-button (click)="loadMore()">Load more</button>
+    </div>
+  </div>
+  <!-- Progress bar -->
   <div *ngIf="!goalReached" class="progress-bar">
     <div class="progress-bar-fill" [ngStyle]="{'width.%': progress * 100}"></div>
   </div>

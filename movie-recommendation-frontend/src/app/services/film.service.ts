@@ -24,7 +24,10 @@ export class FilmService {
     return this.http.get<Film[]>(url);
   }
 
-  getFilmsPageAndFilterByTitle(page: number, title: string): Observable<Film[]> {
+  getFilmsPageAndFilterByTitle(page: number, title: string = ""): Observable<Film[]> {
+    if (title.length === 0) {
+      return this.getFilmsPage(page);
+    }
     const url = `${this.apiUrl}/page/${page}?search=${title}`;
     return this.http.get<Film[]>(url);
   }

@@ -160,6 +160,15 @@
     font-size: 1em;
     cursor: pointer;
   }
+
+  div.load-more-button-wrapper {
+    position: relative;
+    margin-bottom: 60px;
+    > button.mat-mdc-button {
+      transform: translate(-50%, 0);
+      left: 50%;
+    }
+  }
 }
 
 .skeleton {

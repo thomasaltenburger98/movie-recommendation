@@ -35,11 +35,13 @@ export class FilmListComponent {
   currentCount = 0;
   totalCount = 10; // Gesamtzahl Ziel
   goalReached = false;
+  allFilmsLoaded: boolean = false;
+  currentPage = 1;
 
   constructor(private http: HttpClient, private filmService: FilmService, private userService: UserService, private ratingService: RatingService) { }
 
   ngOnInit() {
-    this.loadFilms(1);
+    this.loadFilms();
     this.getRatingCount();
     //this.filteredMovies = this.movies;
     /*this.isLoading = true;
@@ -53,14 +55,32 @@ export class FilmListComponent {
   }
 
   // Load film by pagination
-  loadFilms(page: number): void {
-    this.isLoading = true;
-    this.filmService.getFilmsPage(page).subscribe(films => {
-      this.films = films;
-      console.log('loadFilms');
-      console.log(this.films);
-      this.getFilmDetailsForAllFilms();
-      this.isLoading = false;
+  loadFilms(isLoadMore: boolean = false): void {
+    if (typeof this.timeoutFilmDetails === "number") {
+      clearTimeout(this.timeoutFilmDetails);
+      console.log('cleared timeout');
+    }
+    this.filmService.getFilmsPageAndFilterByTitle(this.currentPage, this.searchString).subscribe(films => {
+      // if all films are loaded
+      if (films.length === 0) {
+        this.allFilmsLoaded = true;
+        return;
+      }
+      if (isLoadMore) {
+        // set isLoading to true for all new films
+        films.forEach(film => film.isLoading = true);
+        this.timeoutFilmDetails = setTimeout(() => {
+          films = this.getFilmDetailsForFilms(films);
+        }, 700);
+        this.films = [...this.films, ...films];
+      } else {
+        this.films = films;
+        // set isLoading to true for all films
+        this.films.forEach(film => film.isLoading = true);
+        this.timeoutFilmDetails = setTimeout(() => {
+          this.films = this.getFilmDetailsForFilms();
+        }, 700);
+      }
       //this.getFilmDetails();
     });
   }
@@ -69,82 +89,59 @@ export class FilmListComponent {
    * used to search in film list
    */
   applyFilter(): void {
-    if (typeof this.timeoutFilmDetails === "number") {
-      clearTimeout(this.timeoutFilmDetails);
-    }
-    if (this.searchString.length > 0) {
-      this.isLoading = true;
-      console.log(this.searchString);
-      this.filmService.getFilmsPageAndFilterByTitle(1, this.searchString).subscribe(films => {
-        this.films = films;
-        // set isLoading to true for all films
-        this.films.forEach(film => film.isLoading = true);
-        this.isLoading = false;
-        this.timeoutFilmDetails = setTimeout(() => {
-          this.getFilmDetailsForAllFilms();
-        }, 500);
-        //this.getFilmDetails();
-      });
-    } else {
-      this.loadFilms(1);
-      this.films.forEach(film => film.isLoading = true);
-      this.timeoutFilmDetails = setTimeout(() => {
-        this.getFilmDetailsForAllFilms();
-      }, 500);
-    }
+    this.currentPage = 1;
+    this.loadFilms();
+  }
+
+  /**
+   * Load more films
+   */
+  loadMore(): void {
+    this.currentPage++;
+    this.loadFilms(true);
   }
 
   likeMovie(film: Film) {
-    this.isLoading = true;
     this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
       film.isUserLiked = true;
-      this.isLoading = false;
     });
   }
 
   dislikeMovie(film: Film) {
-    this.isLoading = true;
     this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
       film.isUserLiked = false;
-      this.isLoading = false;
     });
   }
 
-  previousMovie() {
-
-  }
-
-  nextMovie() {
-
-  }
-
-  getFilmDetails(filmId: number, index: number) {
-    this.films[index].isLoading = true;
+  getFilmDetails(film: Film, index: number) {
+    film.isLoading = true;
+    const filmId = film.id;
 
     // wait 5 seconds here
     setTimeout(() => {
       this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
         console.log(filmDetail);
-        this.films[index].filmDetail = filmDetail;
+        film.filmDetail = filmDetail;
         //console.log(this.filteredFilms[index]);
-        this.films[index].isLoading = false;
-        console.log(this.films);
+        film.isLoading = false;
       });
-    }, 500);
+    }, 250);
   }
 
-  getFilmDetailsForAllFilms(): void {
-    this.films.forEach((film, index) => {
-      this.getFilmDetails(film.id, index);
+  getFilmDetailsForFilms(specificFilms: Film[] = []): Film[] {
+    const films: Film[] = specificFilms.length > 0 ? specificFilms : this.films;
+    films.forEach((film, index) => {
+      this.getFilmDetails(film, index);
     });
+    return films;
   }
 
   private getActors(values: Cast[]): Cast[] {

@@ -101,6 +101,7 @@ export class RecommendationListComponent {
 
   }
 
+  // TODO move to helper class and use it for all components
   getFilmDetails(filmId: number, index: number) {
     this.filteredFilms[index].isLoading = true;
 
@@ -113,7 +114,7 @@ export class RecommendationListComponent {
         this.filteredFilms[index].isLoading = false;
         console.log(this.filteredFilms);
       });
-    }, 500);
+    }, 250);
   }
 
   getFilmDetailsForAllFilms(): void {
