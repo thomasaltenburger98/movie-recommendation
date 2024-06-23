@@ -31,6 +31,7 @@ import {RegisterComponent} from "./register/register.component";
 import {AuthInterceptorService} from "./auth-interceptor.service";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatChipsModule} from "@angular/material/chips";
+import {ProgressbarComponent} from "./progressbar/progressbar.component";
 
 @NgModule({ declarations: [
         AppComponent,
@@ -56,7 +57,9 @@ import {MatChipsModule} from "@angular/material/chips";
         MatToolbarModule,
         MatButtonModule,
         MatCardModule,
-        MatChipsModule], providers:
+        MatChipsModule,
+        ProgressbarComponent
+    ], providers:
     [
       provideHttpClient(withInterceptorsFromDi()),
       { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }

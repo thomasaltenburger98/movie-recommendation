@@ -28,8 +28,6 @@ export class RecommendationListComponent {
   filteredFilms: Film[] = [];
   //filteredFilms: Film[] = [];
   searchString: string = "";
-  isLoading: boolean = false;
-  currentMovieIndex = 0;
   progress = 0;
   currentCount = 0;
   totalCount = 10; // Gesamtzahl Ziel
@@ -49,7 +47,6 @@ export class RecommendationListComponent {
   // Load film by pagination
   loadFilms(): void {
     console.log('loadFilms');
-    this.isLoading = true;
     this.recommendationService.getRecommendedFilms().subscribe(films => {
       console.log(films);
       this.films = films;
@@ -72,24 +69,26 @@ export class RecommendationListComponent {
   }
 
   likeMovie(film: Film) {
-    this.isLoading = true;
+    if (film.isUserLiked) {
+      return; // TODO remove like
+    }
     this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
-      this.isLoading = false;
     });
   }
 
   dislikeMovie(film: Film) {
-    this.isLoading = true;
+    if (film.isUserDisliked) {
+        return; // TODO remove dislike
+    }
     this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
         film.id !== filmID
       );*/
-      this.isLoading = false;
     });
   }
 

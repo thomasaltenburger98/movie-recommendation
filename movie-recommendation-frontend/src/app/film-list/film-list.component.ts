@@ -31,10 +31,6 @@ export class FilmListComponent {
   isLoading: boolean = false;
   timeoutFilmDetails: any;
   currentMovieIndex = 0;
-  progress = 0;
-  currentCount = 0;
-  totalCount = 10; // Gesamtzahl Ziel
-  goalReached = false;
   allFilmsLoaded: boolean = false;
   currentPage = 1;
 
@@ -102,6 +98,9 @@ export class FilmListComponent {
   }
 
   likeMovie(film: Film) {
+    if (film.isUserLiked) {
+      return; // TODO remove like
+    }
     this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
@@ -112,6 +111,9 @@ export class FilmListComponent {
   }
 
   dislikeMovie(film: Film) {
+    if (film.isUserDisliked) {
+      return; // TODO remove dislike
+    }
     this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
       // TODO check if successful
       /*this.filteredFilms = this.filteredFilms.filter((film) =>
@@ -168,15 +170,6 @@ export class FilmListComponent {
         this.updateProgress();
       });*/
     }
-
-  updateProgress() {
-    this.progress = (this.currentCount / this.totalCount) * 100;
-    this.goalReached = this.currentCount >= this.totalCount;
-  }
-
-  onGoalReached() {
-    console.log('Ziel erreicht!');
-  }
 
   getFunctionNames(obj: any): string[] {
     if (!obj) {

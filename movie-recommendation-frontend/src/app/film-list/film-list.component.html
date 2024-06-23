@@ -52,12 +52,7 @@
       <button mat-button (click)="loadMore()">Load more</button>
     </div>
   </div>
-  <!-- Progress bar -->
-  <div *ngIf="!goalReached" class="progress-bar">
-    <div class="progress-bar-fill" [ngStyle]="{'width.%': progress * 100}"></div>
-  </div>
-  <div *ngIf="!goalReached" class="progress-label">{{ currentCount }}/{{ totalCount }}</div>
-  <button *ngIf="goalReached" (click)="onGoalReached()">Weiter zu meinen Empfehlungen</button>
+  <app-progressbar />
 </div>
 
 <!--TODO: Add pagination-->
