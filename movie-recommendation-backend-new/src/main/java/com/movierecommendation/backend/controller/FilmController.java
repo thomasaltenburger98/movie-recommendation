@@ -32,8 +32,12 @@ public class FilmController {
 
     // pagination
     @GetMapping("/page/{page}")
-    public List<Film> showPage(@PathVariable int page) {
-        return filmService.getFilmsByPage(page);
+    public List<Film> showPage(@PathVariable int page, @RequestParam(required = false,name = "search") String title) {
+        if (title != null && !title.isEmpty()) {
+            return filmService.getFilmsByPage(filmService.getFilmsWithTitle(title), page);
+        }
+        List<Film> filmsByPage = filmService.getFilmsByPage(filmService.getAllFilms(), page);
+        return filmsByPage;
     }
 
     @PostMapping

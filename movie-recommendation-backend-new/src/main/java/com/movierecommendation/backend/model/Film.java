@@ -1,11 +1,12 @@
 package com.movierecommendation.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,26 @@ public class Film {
     private List<Genre> genres;
 
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
-    private List<User> users;
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL)
+    private List<Rating> ratings;
+
+    @Setter
+    @Transient
+    @JsonProperty("isUserLiked")
+    private boolean isUserLiked;
+
+    @JsonIgnore
+    public List<User> getUsers() {
+        return ratings.stream().map(Rating::getUser).toList();
+    }
+    public void setUsers(List<User> users) {
+        this.ratings = users.stream()
+                .map(user -> {
+                    Rating rating = new Rating();
+                    rating.setFilm(this);
+                    rating.setUser(user);
+                    return rating;
+                }).toList();
+    }
 }
 

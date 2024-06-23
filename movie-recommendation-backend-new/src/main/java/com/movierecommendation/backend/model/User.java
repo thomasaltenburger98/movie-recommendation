@@ -1,6 +1,8 @@
 package com.movierecommendation.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
@@ -16,50 +18,42 @@ public class User {
         this.password = password;
     }
 
+    // Getters and Setters
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Setter
+    @Getter
     private String username;
 
+    @Setter
+    @Getter
     private String password;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "users")
-    private List<Film> films;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Rating> ratings;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-//    public void setId(Long id) {
+    //    public void setId(Long id) {
 //        this.id = id;
 //    }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String hashedPassword) {
-        this.password = hashedPassword;
-    }
-
     public List<Film> getFilms() {
-        return films;
+        return ratings.stream().map(Rating::getFilm).toList();
     }
 
     public void setFilms(List<Film> films) {
-        this.films = films;
+        this.ratings = films.stream()
+                .map(film -> {
+                    Rating rating = new Rating();
+                    rating.setFilm(film);
+                    rating.setUser(this);
+                    return rating;
+                }).toList();
     }
 
     public List<Token> getTokens() {

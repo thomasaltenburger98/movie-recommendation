@@ -84,9 +84,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
                     .parse(in);
             int i = 1;
             for (CSVRecord record : records) {
-//                if (i > 1000) {
-//                    break;
-//                }
+                if (i > 1000) {
+                    break;
+                }
                 i++;
                 if (record.get("tmdbId").isEmpty()) {
                     continue;
@@ -113,9 +113,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
             Map<String, Genre> genreMap = new HashMap<>();
             genreRepository.findAll().forEach(genre -> genreMap.put(genre.getName(), genre));
             for (CSVRecord record : records) {
-//                if (i > 1000) {
-//                    break;
-//                }
+                if (i > 1000) {
+                    break;
+                }
                 i++;
                 Film film = filmFactory.createFromRecord(record, genreMap);
                 List<Genre> unsavedGenres = new ArrayList<>();
@@ -153,9 +153,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
                     .parse(in);
             int i = 1;
             for (CSVRecord record : records) {
-//                if (i > 1000) {
-//                    break;
-//                }
+                if (i > 1000) {
+                    break;
+                }
                 i++;
                 Long userId = Long.parseLong(record.get("userId"));
                 User user;
