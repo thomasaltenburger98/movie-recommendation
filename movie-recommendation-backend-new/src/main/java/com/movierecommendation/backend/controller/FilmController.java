@@ -1,14 +1,16 @@
 package com.movierecommendation.backend.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.movierecommendation.backend.helpers.TmdbConfig;
 import com.movierecommendation.backend.model.Film;
-import com.movierecommendation.backend.model.FilmDetail;
+import com.movierecommendation.backend.model.data.FilmDetail;
+import com.movierecommendation.backend.model.data.WatchProviders;
+import com.movierecommendation.backend.model.views.FilmViews;
 import com.movierecommendation.backend.service.FilmService;
 import com.movierecommendation.backend.service.ImdbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,32 +22,37 @@ public class FilmController {
     @Autowired
     private ImdbService imdbService;
 
+    @JsonView(FilmViews.FilmView.class)
     @GetMapping
     public List<Film> index() {
         return filmService.getAllFilms();
     }
 
+    @JsonView(FilmViews.FilmViewWithGenres.class)
     @GetMapping("/{id}")
     public Film show(@PathVariable int id) {
         return filmService.getFilmById(id);
     }
 
     // pagination
+    @JsonView(FilmViews.FilmView.class)
     @GetMapping("/page/{page}")
     public List<Film> showPage(@PathVariable int page, @RequestParam(required = false,name = "search") String title) {
         if (title != null && !title.isEmpty()) {
-            return filmService.getFilmsByPage(filmService.getFilmsWithTitle(title), page);
+            return filmService.getFilmsByPageWithTitle(page, title);
         }
-        List<Film> filmsByPage = filmService.getFilmsByPage(filmService.getAllFilms(), page);
+        List<Film> filmsByPage = filmService.getFilmsByPage(page);
         return filmsByPage;
     }
 
+    @JsonView(FilmViews.FilmView.class)
     @PostMapping
     public Film store(@RequestBody Film film) {
         //film.setErscheinungsjahr(new Date());
         return filmService.saveFilm(film);
     }
 
+    @JsonView(FilmViews.FilmView.class)
     @PutMapping("/{id}")
     public Film update(@RequestBody Film film, @PathVariable int id) {
         Film existingFilm = filmService.getFilmById(id);
@@ -75,7 +82,14 @@ public class FilmController {
         // set image url
         TmdbConfig imdbConfig = imdbService.getTmdbConfig();
         String baseUrl = imdbConfig.getImages().getBaseUrl() + imdbConfig.getImages().getPosterSizes().getFirst();
+        String baseUrlOriginal = imdbConfig.getImages().getBaseUrl() + imdbConfig.getImages().getPosterSizes().getLast();
         filmDetail.setImage_url(baseUrl + filmDetail.getPoster_path());
+        filmDetail.setImage_url_original(baseUrlOriginal + filmDetail.getPoster_path());
         return filmDetail;
+    }
+
+    @GetMapping("/providers/{tmdb_id}")
+    public WatchProviders getFilmProviders(@PathVariable Long tmdb_id) {
+        return imdbService.getFilmProvidersFromTmdb(tmdb_id);
     }
 }

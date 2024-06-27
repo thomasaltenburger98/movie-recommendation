@@ -1,8 +1,13 @@
-package com.movierecommendation.backend.model;
+package com.movierecommendation.backend.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.movierecommendation.backend.model.data.videos.Video;
 import lombok.Data;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class FilmDetail {
@@ -29,11 +34,23 @@ public class FilmDetail {
     private String status;
     private String tagline;
     private String title;
-    private boolean video;
+    @JsonIgnore
+    private Video video;
     private double vote_average;
     private int vote_count;
     private Credits credits;
     private String image_url;
+    private String image_url_original;
+
+    @JsonProperty("video")
+    public Video getVideo() {
+        return video;
+    }
+
+    @JsonIgnore
+    public void setVideo(Video video) {
+        this.video = video;
+    }
 
     @Data
     public static class Collection {
@@ -106,4 +123,13 @@ public class FilmDetail {
             private String job;
         }
     }
+
+    @JsonProperty("videos")
+    private void mapVideo(Map<String, Video[]> videos) {
+        this.video = Arrays.stream(videos.get("results")).filter(v -> v.getType().equals("Trailer") && v.isOfficial()).findFirst()
+                .orElseGet(() -> Arrays.stream(videos.get("results")).filter(Video::isOfficial).findFirst()
+                        .orElseGet(() -> Arrays.stream(videos.get("results")).filter(v -> v.getType().equals("Trailer")).findFirst()
+                            .orElse(null)));
+    }
+
 }

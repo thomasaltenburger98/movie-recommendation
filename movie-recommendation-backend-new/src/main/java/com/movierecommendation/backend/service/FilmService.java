@@ -3,6 +3,8 @@ package com.movierecommendation.backend.service;
 import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +20,6 @@ public class FilmService {
 
     public List<Film> getAllFilms() {
         List<Film> filmList = filmRepository.findAll();
-        // remove genres from each film to avoid circular references
-        filmList.forEach(film -> {
-            film.setGenres(null);
-        });
         return setFilmListParams(filmList);
     }
 
@@ -30,13 +28,23 @@ public class FilmService {
         int end = Math.min(page * 5, list.size());
         return list.subList(start, end);
     }
+    public List<Film> getFilmsByPage(int page) {
+        int pageSize = 5;
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
+        Page<Film> filmPage = filmRepository.findAll(pageRequest);
+        return setFilmListParams(filmPage.getContent());
+    }
 
-    public List<Film> getFilmsWithTitle(String title) {
-        return setFilmListParams( filmRepository.findByTitleContaining(title) );
+    public List<Film> getFilmsByPageWithTitle(int page, String title) {
+        int pageSize = 5;
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize);
+        Page<Film> filmPage = filmRepository.findByTitleContaining(title, pageRequest);
+        return setFilmListParams(filmPage.getContent());
     }
 
     public Film getFilmById(int id) {
         Film result = filmRepository.findById(id).orElse(null);
+        result.calculateAndSetAverageRating();
         if (result != null) {
             result.setGenres(null);
             return setFilmParams(result);
@@ -55,13 +63,20 @@ public class FilmService {
     private List<Film> setFilmListParams(List<Film> filmList) {
         String username = authService.getCurrentUsername();
         filmList.forEach(film -> {
-            film.setUserLiked(film.getUsers().stream().anyMatch(user -> user.getUsername().equals(username)));
+            //film.setUserLiked(film.getUsers().stream().anyMatch(user -> user.getUsername().equals(username)));
+
+            film.setUserLiked(film.getRatings().stream().anyMatch(rating -> rating.getUser().getUsername().equals(username) && rating.getRatingValue() == 5));
+            film.setUserDisliked(film.getRatings().stream().anyMatch(rating -> rating.getUser().getUsername().equals(username) && rating.getRatingValue() == 0));
+            film.calculateAndSetAverageRating();
         });
         return filmList;
     }
     private Film setFilmParams(Film film) {
         String username = authService.getCurrentUsername();
-        film.setUserLiked(film.getUsers().stream().anyMatch(user -> user.getUsername().equals(username)));
+        //film.setUserLiked(film.getUsers().stream().anyMatch(user -> user.getUsername().equals(username)));
+
+        film.setUserLiked(film.getRatings().stream().anyMatch(rating -> rating.getUser().getUsername().equals(username) && rating.getRatingValue() == 5));
+        film.setUserDisliked(film.getRatings().stream().anyMatch(rating -> rating.getUser().getUsername().equals(username) && rating.getRatingValue() == 0));
         return film;
     }
 }

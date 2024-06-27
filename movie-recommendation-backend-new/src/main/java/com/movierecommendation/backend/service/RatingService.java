@@ -1,8 +1,6 @@
 package com.movierecommendation.backend.service;
 
-import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.model.Rating;
-import com.movierecommendation.backend.model.User;
 import com.movierecommendation.backend.repository.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ public class RatingService {
         //rating.setFilm(new Film(filmId));
         //rating.setUser(new User(userId));
         rating.setRatingValue(ratingValue);
-        rating.setErstelltAm(new Date());
+        rating.setTimestamp(new Date());
         ratingRepository.save(rating);
     }
 
@@ -33,8 +31,29 @@ public class RatingService {
         return savedRating;
     }
     public void deleteRatingById(long id) {
-        // TODO delete rating from CSV file
         ratingRepository.deleteById(id);
+        // delete rating from CSV file
+        csvDataManager.removeRatingToCSV(ratingRepository.findById(id).get());
+    }
+    public void deleteRatingByUserIdAndFilmId(long userId, long filmId) {
+        // get rating by userId, filmId, ratingValue
+        Rating rating = ratingRepository.getRatingByUserIdAndFilmId(userId, filmId);
+        if (rating == null) {
+            return;
+        }
+        ratingRepository.delete(rating);
+        // delete rating from CSV file
+        csvDataManager.removeRatingToCSV(rating);
+    }
+    public void deleteRatingByUserIdAndFilmIdAndRatingValue(long userId, long filmId, float ratingValue) {
+        // get rating by userId, filmId, ratingValue
+        Rating rating = ratingRepository.getRatingByUserIdAndFilmIdAndRatingValue(userId, filmId, ratingValue);
+        if (rating == null) {
+            return;
+        }
+        ratingRepository.delete(rating);
+        // delete rating from CSV file
+        csvDataManager.removeRatingToCSV(rating);
     }
 
     public List<Rating> getAllRatedFilmOfUser(int userId) {

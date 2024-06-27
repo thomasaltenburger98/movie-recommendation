@@ -1,7 +1,9 @@
 package com.movierecommendation.backend.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.movierecommendation.backend.model.Film;
 import com.movierecommendation.backend.model.Rating;
+import com.movierecommendation.backend.model.views.GenreViews;
 import com.movierecommendation.backend.service.AuthService;
 import com.movierecommendation.backend.service.RatingService;
 import com.movierecommendation.backend.service.RecommendationService;
@@ -29,15 +31,9 @@ public class RecommendationController {
 
     @GetMapping
     public List<Film> getRecommendationsForCurrentUser() {
-        System.out.println("RecommendationController.getRecommendationsForCurrentUser");
-        //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //int userId = authService.getUserIdByUsername(authService.getCurrentUsername()).intValue();
-        //System.out.println("userId: " + userId);
         List<Rating> ratedFilms = ratingService.getPositiveRatedFilmOfUser(authService.getCurrentUsername());
-        System.out.println("ratedFilms: " + ratedFilms.size());
-        List<Film> list = recommendationService.getRecommendedFilms(ratedFilms);
-        System.out.println("list: " + list.size());
+        int userId = authService.getUserIdByUsername(authService.getCurrentUsername()).intValue();
+        List<Film> list = recommendationService.getRecommendedFilms(ratedFilms, userId, 1, 5);
         return list;
     }
 }
