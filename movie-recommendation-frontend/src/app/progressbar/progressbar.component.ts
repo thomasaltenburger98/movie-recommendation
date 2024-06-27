@@ -20,8 +20,11 @@ export class ProgressbarComponent {
   totalCount = 10; // Gesamtzahl Ziel
 
   constructor(private ratingService: RatingService) {
-    this.ratingService.ratingUpdated$.subscribe(() => {
+    this.ratingService.ratingIncreased$.subscribe(() => {
       this.increaseCount();
+    });
+    this.ratingService.ratingDecreased$.subscribe(() => {
+      this.increaseCount(-1);
     });
 
     this.ratingService.getRatingCount().subscribe((count: any) => {

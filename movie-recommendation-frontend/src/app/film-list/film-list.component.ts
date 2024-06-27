@@ -7,6 +7,7 @@ import {Cast, FilmDetail} from "../../models/FilmDetail";
 import {RatingService} from "../services/rating.service";
 import { getRuntimeAsTimeString } from '../utils/utils';
 import {HttpClient} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-film-list',
@@ -34,7 +35,11 @@ export class FilmListComponent {
   allFilmsLoaded: boolean = false;
   currentPage = 1;
 
-  constructor(private http: HttpClient, private filmService: FilmService, private userService: UserService, private ratingService: RatingService) { }
+  constructor(private http: HttpClient,
+              private filmService: FilmService,
+              private userService: UserService,
+              private ratingService: RatingService,
+              private router: Router) { }
 
   ngOnInit() {
     this.loadFilms();
@@ -56,28 +61,37 @@ export class FilmListComponent {
       clearTimeout(this.timeoutFilmDetails);
       console.log('cleared timeout');
     }
-    this.filmService.getFilmsPageAndFilterByTitle(this.currentPage, this.searchString).subscribe(films => {
-      // if all films are loaded
-      if (films.length === 0) {
-        this.allFilmsLoaded = true;
-        return;
+    this.filmService.getFilmsPageAndFilterByTitle(this.currentPage, this.searchString).subscribe({
+      next: (films) => {
+        console.log(films);
+        // if all films are loaded
+        if (films.length === 0) {
+          this.allFilmsLoaded = true;
+          return;
+        }
+        if (isLoadMore) {
+          // set isLoading to true for all new films
+          films.forEach(film => film.isLoading = true);
+          this.timeoutFilmDetails = setTimeout(() => {
+            films = this.getFilmDetailsForFilms(films);
+          }, 700);
+          this.films = [...this.films, ...films];
+        } else {
+          this.films = films;
+          // set isLoading to true for all films
+          this.films.forEach(film => film.isLoading = true);
+          this.timeoutFilmDetails = setTimeout(() => {
+            this.films = this.getFilmDetailsForFilms();
+          }, 700);
+        }
+        //this.getFilmDetails();
+      },
+      error: (error) => {
+        if (error.status === 403) {
+          this.router.navigate(['/login']);
+          this.userService.deleteToken();
+        }
       }
-      if (isLoadMore) {
-        // set isLoading to true for all new films
-        films.forEach(film => film.isLoading = true);
-        this.timeoutFilmDetails = setTimeout(() => {
-          films = this.getFilmDetailsForFilms(films);
-        }, 700);
-        this.films = [...this.films, ...films];
-      } else {
-        this.films = films;
-        // set isLoading to true for all films
-        this.films.forEach(film => film.isLoading = true);
-        this.timeoutFilmDetails = setTimeout(() => {
-          this.films = this.getFilmDetailsForFilms();
-        }, 700);
-      }
-      //this.getFilmDetails();
     });
   }
 
@@ -98,29 +112,67 @@ export class FilmListComponent {
   }
 
   likeMovie(film: Film) {
+    const filmIsRated = film.isUserLiked || film.isUserDisliked;
     if (film.isUserLiked) {
-      return; // TODO remove like
+      this.ratingService.unrateFilm(film.id, 5).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
+    } else {
+      this.ratingService.rateFilm(film.id, 5, filmIsRated).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = true;
+          film.isUserDisliked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
     }
-    this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
-      // TODO check if successful
-      /*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*/
-      film.isUserLiked = true;
-    });
   }
 
   dislikeMovie(film: Film) {
+    const filmIsRated = film.isUserLiked || film.isUserDisliked;
     if (film.isUserDisliked) {
-      return; // TODO remove dislike
+      this.ratingService.unrateFilm(film.id, 0).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserDisliked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
+    } else {
+      this.ratingService.rateFilm(film.id, 0, filmIsRated).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = false;
+          film.isUserDisliked = true;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
     }
-    this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
-      // TODO check if successful
-      /*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*/
-      film.isUserLiked = false;
-    });
   }
 
   getFilmDetails(film: Film, index: number) {
@@ -129,11 +181,19 @@ export class FilmListComponent {
 
     // wait 5 seconds here
     setTimeout(() => {
-      this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
-        console.log(filmDetail);
-        film.filmDetail = filmDetail;
-        //console.log(this.filteredFilms[index]);
-        film.isLoading = false;
+      this.filmService.getFilmDetails(filmId).subscribe({
+        next: (filmDetail) => {
+          console.log(filmDetail);
+          film.filmDetail = filmDetail;
+          //console.log(this.filteredFilms[index]);
+          film.isLoading = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
       });
     }, 250);
   }

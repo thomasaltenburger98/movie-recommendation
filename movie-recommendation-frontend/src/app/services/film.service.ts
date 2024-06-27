@@ -4,6 +4,7 @@ import {flatMap, map, Observable, switchMap, tap} from "rxjs";
 import {Film} from "../../models/Film";
 import {UserService} from "./user.service";
 import {FilmDetail} from "../../models/FilmDetail";
+import {WatchProviders} from "../../models/WatchProviders";
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,11 @@ export class FilmService {
   getFilmDetails(id: number): Observable<FilmDetail> {
     const url = `${this.apiUrl}/detail/${id}`;
     return this.http.get<FilmDetail>(url);
+  }
+
+  getWatchProviders(tmdbId: number): Observable<WatchProviders> {
+    const url = `${this.apiUrl}/providers/${tmdbId}`;
+    return this.http.get<WatchProviders>(url);
   }
 
   // is it necessary???

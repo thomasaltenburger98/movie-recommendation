@@ -11,10 +11,9 @@ export class UserService {
   private ApiURLRegister = "http://127.0.0.1:8080/api/auth/register";
   private ApiURLLogin = "http://127.0.0.1:8080/api/auth/login";
   private ApiURLLogout = "http://127.0.0.1:8080/api/auth/logout";
-  private userID: number;
 
   constructor(private http: HttpClient) {
-    this.userID = -1;
+
   }
 
   registerUser(username: string, password: string): Observable<any> {
@@ -42,7 +41,6 @@ export class UserService {
       tap((response) => {
         if (response.status === 200) {
           this.deleteToken();
-          this.userID = -1;
         }
       })
     );
@@ -59,36 +57,6 @@ export class UserService {
   }
   isLoggedIn(): boolean {
     return this.getToken() !== null;
-  }
-
-  public getUserID(): Observable<number> {
-    let userID = this.userID;
-    if (this.userID < 0) {
-      userID = this.getUserIDFromStorage();
-      if (userID < 0) {
-        return this.fetchUserID().pipe(
-          tap((result: any) => {
-            userID = parseInt(result['user_id']);
-            this.userID = userID;
-            this.saveUserIDInStorage(userID);
-          }),
-          map(() => userID)
-        );
-      }
-    }
-    return of(userID);
-  }
-
-  private fetchUserID(): Observable<any> {
-    return this.http.get(this.ApiURL);
-  }
-
-  private getUserIDFromStorage(): number {
-    const value = localStorage.getItem('user-id');
-    return value ? parseInt(value) : -1;
-  }
-  private saveUserIDInStorage(userID: number) {
-    localStorage.setItem('user-id', userID+"");
   }
 
 }

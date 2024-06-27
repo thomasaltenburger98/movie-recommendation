@@ -6,7 +6,7 @@
   <div class="search-bar">
     <input type="text" placeholder="Search" [(ngModel)]="searchString" (ngModelChange)="applyFilter()" />
   </div>
-  <h2 *ngIf="searchString.length == 0">What movies do you like?</h2>
+  <h2 *ngIf="searchString.length == 0">Movies you may like</h2>
   <h2 *ngIf="searchString.length > 0">You are looking for "{{ searchString }}"?</h2>
   <div class="movie-item" *ngFor="let film of filteredFilms">
     <div class="movie-details">

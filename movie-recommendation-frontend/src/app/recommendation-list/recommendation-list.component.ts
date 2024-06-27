@@ -9,6 +9,7 @@ import {UserService} from "../services/user.service";
 import {RatingService} from "../services/rating.service";
 import {Cast} from "../../models/FilmDetail";
 import {RecommendationService} from "../services/recommendation.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-recommendation-list',
@@ -37,7 +38,8 @@ export class RecommendationListComponent {
               private filmService: FilmService,
               private recommendationService: RecommendationService,
               private userService: UserService,
-              private ratingService: RatingService) { }
+              private ratingService: RatingService,
+              private router: Router) { }
 
   ngOnInit() {
     this.loadFilms();
@@ -47,14 +49,22 @@ export class RecommendationListComponent {
   // Load film by pagination
   loadFilms(): void {
     console.log('loadFilms');
-    this.recommendationService.getRecommendedFilms().subscribe(films => {
-      console.log(films);
-      this.films = films;
-      this.filteredFilms = this.films;
-      this.getFilmDetailsForAllFilms();
+    this.recommendationService.getRecommendedFilms().subscribe({
+      next: (films) => {
+        console.log(films);
+        this.films = films;
+        this.filteredFilms = this.films;
+        this.getFilmDetailsForAllFilms();
 
-      //this.getFilmDetails();
-    });
+        //this.getFilmDetails();
+      },
+      error: (error) => {
+        if (error.status === 403) {
+          this.router.navigate(['/login']);
+          this.userService.deleteToken();
+        }
+    }
+  });
   }
 
   /**

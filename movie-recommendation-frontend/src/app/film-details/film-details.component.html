@@ -2,13 +2,11 @@
   <h1 class="title">{{ film?.title }}</h1>
 
   <div class="movie-info">
-    <img src="path-to-avatar-poster.jpg" alt="Avatar Movie Poster" mat-card-image>
+    <img src="path-to-avatar-poster.jpg" alt="Avatar Movie Poster" mat-card-image src="{{ film?.filmDetail?.image_url_original }}">
     <div class="details">
       <div class="tags">
         <mat-chip-set>
-          <mat-chip>Action</mat-chip>
-          <mat-chip>Abenteuer</mat-chip>
-          <mat-chip>Fantasy</mat-chip>
+          <mat-chip *ngFor="let genre of film?.filmDetail?.genres">{{ genre?.name }}</mat-chip>
         </mat-chip-set>
       </div>
       <p><strong>Erschienen am:</strong> {{ film?.filmDetail?.release_date }}</p>
@@ -24,11 +22,9 @@
     </div>
     <div class="stars-wrapper">
       <div class="stars">
-        <mat-icon color="warn">star</mat-icon>
-        <mat-icon color="warn">star</mat-icon>
-        <mat-icon color="warn">star</mat-icon>
-        <mat-icon color="warn">star</mat-icon>
-        <mat-icon color="warn">star_half</mat-icon>
+        <mat-icon color="warn" *ngFor="let item of createRange(getRoundedRating(film?.bewertung)); let currentElementIndex=index">
+          {{ isRatingStarHalf(getRoundedRating(film?.bewertung), currentElementIndex+1) ? 'star_half' : 'star' }}
+        </mat-icon>
       </div>
       <div class="imdb-button-wrapper" *ngIf="film?.filmDetail?.imdb_id">
         <a href="https://www.imdb.com/title/{{ film?.filmDetail?.imdb_id }}" target="_blank">
@@ -38,10 +34,8 @@
     </div>
   </div>
 
-  <div class="trailer">
-    <button mat-icon-button color="accent">
-      <mat-icon>play_circle_filled</mat-icon>
-    </button>
+  <div class="trailer" *ngIf="film?.filmDetail?.video !== undefined">
+    <iframe width="560" height="315" [src]="getSafeUrlForVideo(film?.filmDetail?.video?.key)" allowfullscreen></iframe>
   </div>
 
   <div class="cast">
@@ -56,6 +50,39 @@
         <td>{{ castMember.character }}</td>
       </tr>
     </table>
+  </div>
+
+  <div class="stream-list" *ngIf="providers">
+    <h2>Verfügbar auf</h2>
+    <div class="stream-list__flex">
+      <div class="stream-list__col">
+        <h3>kaufen</h3>
+        <table>
+          <tr *ngFor="let provider of providers?.buy">
+            <td>{{ provider?.provider_name }}</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <div class="stream-list__col">
+        <h3>ausleihen</h3>
+        <table>
+          <tr *ngFor="let provider of providers?.rent">
+            <td>{{ provider?.provider_name }}</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <div class="stream-list__col">
+        <h3>Flatrate</h3>
+        <table>
+          <tr *ngFor="let provider of providers?.flatrate">
+            <td>{{ provider?.provider_name }}</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div class="similar-movies">

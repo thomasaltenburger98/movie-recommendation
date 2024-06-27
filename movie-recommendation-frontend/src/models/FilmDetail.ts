@@ -1,3 +1,5 @@
+import {Video} from "./Video";
+
 export class FilmDetail {
   adult: boolean;
   backdrop_path: string;
@@ -22,11 +24,12 @@ export class FilmDetail {
   status: string;
   tagline: string;
   title: string;
-  video: boolean;
+  video: Video | undefined;
   vote_average: number;
   vote_count: number;
   credits: Credits;
   image_url: string;
+  image_url_original: string;
 
   constructor() {
     this.adult = false;
@@ -52,11 +55,12 @@ export class FilmDetail {
     this.status = '';
     this.tagline = '';
     this.title = '';
-    this.video = false;
+    this.video = undefined;
     this.vote_average = 0;
     this.vote_count = 0;
     this.credits = new Credits();
     this.image_url = '';
+    this.image_url_original = '';
   }
 }
 
