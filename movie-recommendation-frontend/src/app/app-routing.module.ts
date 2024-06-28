@@ -6,9 +6,11 @@ import {LoginComponent} from "./login/login.component";
 import {authGuard} from "./auth.guard";
 import {RegisterComponent} from "./register/register.component";
 import {RecommendationListComponent} from "./recommendation-list/recommendation-list.component";
+import {SplashScreenComponent} from "./splash-screen/splash-screen.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', component: SplashScreenComponent },
+  //{ path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'films', component: FilmListComponent, canActivate: [authGuard] },

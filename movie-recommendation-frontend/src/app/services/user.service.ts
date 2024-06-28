@@ -38,8 +38,12 @@ export class UserService {
     return this.http.post<Response>(this.ApiURLLogout, {
       token: this.getToken()
     }).pipe(
-      tap((response) => {
-        if (response.status === 200) {
+      tap({
+        next: (response) => {
+          this.deleteToken();
+        },
+        error: (error) => {
+          console.log(error);
           this.deleteToken();
         }
       })

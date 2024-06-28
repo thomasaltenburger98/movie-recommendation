@@ -1,0 +1,18 @@
+.mat-drawer-content {
+  background-color: white !important;
+}
+
+.logo-animation-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+
+  img {
+    width: 400px;
+    height: auto;
+    margin-right: -10px;
+  }
+}
+
