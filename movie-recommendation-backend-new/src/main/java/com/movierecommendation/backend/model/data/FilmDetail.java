@@ -14,10 +14,10 @@ public class FilmDetail {
     private boolean adult;
     private String backdrop_path;
     private Collection belongs_to_collection;
-    private int budget;
+    private long budget;
     private List<Genre> genres;
     private String homepage;
-    private int id;
+    private long id;
     private String imdb_id;
     private List<String> origin_country;
     private String original_language;
@@ -28,8 +28,8 @@ public class FilmDetail {
     private List<ProductionCompany> production_companies;
     private List<ProductionCountry> production_countries;
     private String release_date;
-    private int revenue;
-    private int runtime;
+    private long revenue;
+    private long runtime;
     private List<SpokenLanguage> spoken_languages;
     private String status;
     private String tagline;
@@ -37,7 +37,7 @@ public class FilmDetail {
     @JsonIgnore
     private Video video;
     private double vote_average;
-    private int vote_count;
+    private long vote_count;
     private Credits credits;
     private String image_url;
     private String image_url_original;
@@ -54,7 +54,7 @@ public class FilmDetail {
 
     @Data
     public static class Collection {
-        private int id;
+        private long id;
         private String name;
         private String poster_path;
         private String backdrop_path;
@@ -62,13 +62,13 @@ public class FilmDetail {
 
     @Data
     public static class Genre {
-        private int id;
+        private long id;
         private String name;
     }
 
     @Data
     public static class ProductionCompany {
-        private int id;
+        private long id;
         private String logo_path;
         private String name;
         private String origin_country;
@@ -95,24 +95,24 @@ public class FilmDetail {
         @Data
         public static class Cast {
             private boolean adult;
-            private int gender;
-            private int id;
+            private long gender;
+            private long id;
             private String known_for_department;
             private String name;
             private String original_name;
             private double popularity;
             private String profile_path;
-            private int cast_id;
+            private long cast_id;
             private String character;
             private String credit_id;
-            private int order;
+            private long order;
         }
 
         @Data
         public static class Crew {
             private boolean adult;
-            private int gender;
-            private int id;
+            private long gender;
+            private long id;
             private String known_for_department;
             private String name;
             private String original_name;

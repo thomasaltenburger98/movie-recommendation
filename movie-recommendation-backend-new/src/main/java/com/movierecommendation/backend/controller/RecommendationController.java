@@ -30,10 +30,13 @@ public class RecommendationController {
     private AuthService authService;
 
     @GetMapping
-    public List<Film> getRecommendationsForCurrentUser() {
+    public List<Film> getRecommendationsForCurrentUser(@RequestParam(required = false, name = "page") Integer page) {
+        if (page == null) {
+            page = 1;
+        }
         List<Rating> ratedFilms = ratingService.getPositiveRatedFilmOfUser(authService.getCurrentUsername());
         int userId = authService.getUserIdByUsername(authService.getCurrentUsername()).intValue();
-        List<Film> list = recommendationService.getRecommendedFilms(ratedFilms, userId, 1, 5);
+        List<Film> list = recommendationService.getRecommendedFilms(ratedFilms, userId, page, 5);
         return list;
     }
 }

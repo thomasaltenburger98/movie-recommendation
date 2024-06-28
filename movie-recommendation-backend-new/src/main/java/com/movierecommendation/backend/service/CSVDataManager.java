@@ -96,6 +96,7 @@ public class CSVDataManager {
                             .parse(in);
                     writer.write("userId,movieId,rating,timestamp");
                     writer.newLine();
+                    writer.flush();
                     for (CSVRecord record : records) {
                         Long userId = Long.parseLong(record.get("userId"));
                         Long filmId = Long.parseLong(record.get("movieId"));
@@ -108,6 +109,7 @@ public class CSVDataManager {
                         if (!DELETE_RATINGS_CACHE.contains(rating)) {
                             writer.write(rating.toCSVString());
                             writer.newLine();
+                            writer.flush();
                         }
                     }
                 }
