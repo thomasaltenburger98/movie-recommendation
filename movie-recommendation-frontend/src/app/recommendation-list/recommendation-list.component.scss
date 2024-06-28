@@ -3,6 +3,10 @@
 .movie-list {
   padding: 0px 80px;
 
+  .icon-liked {
+    color: #ff9800 !important;
+  }
+
   .header {
     display: block;
     height: 100%;
@@ -92,6 +96,7 @@
 
     .movie-actions {
       margin-right: 12px;
+      a,
       button {
         margin-right: 10px;
         padding: 10px 20px;
@@ -131,31 +136,14 @@
       }
     }
   }
-  .progress-bar {
-    width: 200px;
-    background-color: #e0e0e0;
-    height: 25px;
-    border-radius: 25px;
-    overflow: hidden;
+
+  div.load-more-button-wrapper {
     position: relative;
-  }
-
-  .progress-bar-fill {
-    height: 100%;
-    background-color: #3f51b5;
-  }
-
-  .progress-label {
-    margin-top: 10px;
-    font-size: 1em;
-    text-align: center;
-  }
-
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
+    margin-bottom: 60px;
+    > button.mat-mdc-button {
+      transform: translate(-50%, 0);
+      left: 50%;
+    }
   }
 }
 

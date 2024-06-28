@@ -9,7 +9,8 @@ import {UserService} from "../services/user.service";
 import {RatingService} from "../services/rating.service";
 import {Cast} from "../../models/FilmDetail";
 import {RecommendationService} from "../services/recommendation.service";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {MatAnchor, MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-recommendation-list',
@@ -19,20 +20,22 @@ import {Router} from "@angular/router";
     NgForOf,
     NgIf,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    RouterLink,
+    MatButton,
+    MatAnchor
   ],
   templateUrl: './recommendation-list.component.html',
   styleUrl: './recommendation-list.component.scss'
 })
 export class RecommendationListComponent {
   films: Film[] = [];
-  filteredFilms: Film[] = [];
   //filteredFilms: Film[] = [];
   searchString: string = "";
   progress = 0;
-  currentCount = 0;
-  totalCount = 10; // Gesamtzahl Ziel
-  goalReached = false;
+  timeoutFilmDetails: any;
+  allFilmsLoaded: boolean = false;
+  currentPage = 1;
 
   constructor(private http: HttpClient,
               private filmService: FilmService,
@@ -47,15 +50,34 @@ export class RecommendationListComponent {
   }
 
   // Load film by pagination
-  loadFilms(): void {
-    console.log('loadFilms');
-    this.recommendationService.getRecommendedFilms().subscribe({
+  loadFilms(isLoadMore: boolean = false): void {
+    if (typeof this.timeoutFilmDetails === "number") {
+      clearTimeout(this.timeoutFilmDetails);
+      console.log('cleared timeout');
+    }
+    this.recommendationService.getRecommendedFilms(this.currentPage).subscribe({
       next: (films) => {
         console.log(films);
-        this.films = films;
-        this.filteredFilms = this.films;
-        this.getFilmDetailsForAllFilms();
-
+        // if all films are loaded
+        if (films.length === 0) {
+          this.allFilmsLoaded = true;
+          return;
+        }
+        if (isLoadMore) {
+          // set isLoading to true for all new films
+          films.forEach(film => film.isLoading = true);
+          this.timeoutFilmDetails = setTimeout(() => {
+            films = this.getFilmDetailsForFilms(films);
+          }, 700);
+          this.films = [...this.films, ...films];
+        } else {
+          this.films = films;
+          // set isLoading to true for all films
+          this.films.forEach(film => film.isLoading = true);
+          this.timeoutFilmDetails = setTimeout(() => {
+            this.films = this.getFilmDetailsForFilms();
+          }, 700);
+        }
         //this.getFilmDetails();
       },
       error: (error) => {
@@ -63,73 +85,119 @@ export class RecommendationListComponent {
           this.router.navigate(['/login']);
           this.userService.deleteToken();
         }
-    }
-  });
+      }
+    });
   }
 
   /**
    * used to search in film list
    */
   applyFilter(): void {
-    if (this.searchString.length > 0) {
-      // TODO
-    } else {
-      // TODO
-    }
+    this.currentPage = 1;
+    this.loadFilms();
+  }
+
+  /**
+   * Load more films
+   */
+  loadMore(): void {
+    this.currentPage++;
+    this.loadFilms(true);
   }
 
   likeMovie(film: Film) {
+    const filmIsRated = film.isUserLiked || film.isUserDisliked;
     if (film.isUserLiked) {
-      return; // TODO remove like
+      this.ratingService.unrateFilm(film.id, 5).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
+    } else {
+      this.ratingService.rateFilm(film.id, 5, filmIsRated).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = true;
+          film.isUserDisliked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
     }
-    this.ratingService.rateFilm(film.id, 5).subscribe((result) => {
-      // TODO check if successful
-      /*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*/
-    });
   }
 
   dislikeMovie(film: Film) {
+    const filmIsRated = film.isUserLiked || film.isUserDisliked;
     if (film.isUserDisliked) {
-        return; // TODO remove dislike
+      this.ratingService.unrateFilm(film.id, 0).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserDisliked = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
+    } else {
+      this.ratingService.rateFilm(film.id, 0, filmIsRated).subscribe({
+        next: (result) => {
+          // TODO check if successful
+          film.isUserLiked = false;
+          film.isUserDisliked = true;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
+      });
     }
-    this.ratingService.rateFilm(film.id, 0).subscribe((result) => {
-      // TODO check if successful
-      /*this.filteredFilms = this.filteredFilms.filter((film) =>
-        film.id !== filmID
-      );*/
-    });
   }
 
-  previousMovie() {
-
-  }
-
-  nextMovie() {
-
-  }
-
-  // TODO move to helper class and use it for all components
-  getFilmDetails(filmId: number, index: number) {
-    this.filteredFilms[index].isLoading = true;
+  getFilmDetails(film: Film, index: number) {
+    film.isLoading = true;
+    const filmId = film.id;
 
     // wait 5 seconds here
     setTimeout(() => {
-      this.filmService.getFilmDetails(filmId).subscribe(filmDetail => {
-        console.log(filmDetail);
-        this.filteredFilms[index].filmDetail = filmDetail;
-        //console.log(this.filteredFilms[index]);
-        this.filteredFilms[index].isLoading = false;
-        console.log(this.filteredFilms);
+      this.filmService.getFilmDetails(filmId).subscribe({
+        next: (filmDetail) => {
+          console.log(filmDetail);
+          film.filmDetail = filmDetail;
+          //console.log(this.filteredFilms[index]);
+          film.isLoading = false;
+        },
+        error: (error) => {
+          if (error.status === 403) {
+            this.router.navigate(['/login']);
+            this.userService.deleteToken();
+          }
+        }
       });
     }, 250);
   }
 
-  getFilmDetailsForAllFilms(): void {
-    this.filteredFilms.forEach((film, index) => {
-      this.getFilmDetails(film.id, index);
+  getFilmDetailsForFilms(specificFilms: Film[] = []): Film[] {
+    const films: Film[] = specificFilms.length > 0 ? specificFilms : this.films;
+    films.forEach((film, index) => {
+      this.getFilmDetails(film, index);
     });
+    return films;
   }
 
   private getActors(values: Cast[]): Cast[] {
@@ -150,21 +218,12 @@ export class RecommendationListComponent {
     return "";
   }
 
-  getRatingCount() {
-    /*this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
-      this.currentCount = count;
-      this.updateProgress();
-    });*/
-  }
-
-  updateProgress() {
-    this.progress = (this.currentCount / this.totalCount) * 100;
-    this.goalReached = this.currentCount >= this.totalCount;
-  }
-
-  onGoalReached() {
-    console.log('Ziel erreicht!');
-  }
+   getRatingCount() {
+      /*this.http.get<number>(`${this.baseUrl}/count`).subscribe(count => {
+        this.currentCount = count;
+        this.updateProgress();
+      });*/
+    }
 
   getFunctionNames(obj: any): string[] {
     if (!obj) {
@@ -174,4 +233,5 @@ export class RecommendationListComponent {
     const prototype = Object.getPrototypeOf(obj);
     return Object.getOwnPropertyNames(prototype);
   }
+
 }

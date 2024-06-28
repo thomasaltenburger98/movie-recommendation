@@ -12,8 +12,8 @@ export class RecommendationService {
 
   constructor(private http: HttpClient, private userService: UserService) { }
 
-  getRecommendedFilms(): Observable<Film[]> {
-    const url = this.apiUrl;
+  getRecommendedFilms(page: number = 1): Observable<Film[]> {
+    const url = this.apiUrl+ `?page=${page}`;
     return this.http.get<Film[]>(url);
   }
 

@@ -20,8 +20,12 @@ export class AppComponent {
   }
 
   logout() {
-    this.userService.logoutUser().subscribe(response => {
-      if (response.status === 200) {
+    this.userService.logoutUser().subscribe({
+      next: (response) => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.log(error);
         this.router.navigate(['/login']);
       }
     });

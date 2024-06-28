@@ -29,9 +29,7 @@ export class FilmListComponent {
   films: Film[] = [];
   //filteredFilms: Film[] = [];
   searchString: string = "";
-  isLoading: boolean = false;
   timeoutFilmDetails: any;
-  currentMovieIndex = 0;
   allFilmsLoaded: boolean = false;
   currentPage = 1;
 
