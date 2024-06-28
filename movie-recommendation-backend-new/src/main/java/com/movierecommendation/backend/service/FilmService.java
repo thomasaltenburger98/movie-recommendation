@@ -44,8 +44,8 @@ public class FilmService {
 
     public Film getFilmById(int id) {
         Film result = filmRepository.findById(id).orElse(null);
-        result.calculateAndSetAverageRating();
         if (result != null) {
+            result.calculateAndSetAverageRating();
             result.setGenres(null);
             return setFilmParams(result);
         }

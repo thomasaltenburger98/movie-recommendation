@@ -8,6 +8,7 @@ import com.movierecommendation.backend.model.views.GenreViews;
 import com.movierecommendation.backend.repository.FilmRepository;
 import com.movierecommendation.backend.repository.RatingRepository;
 import com.movierecommendation.backend.service.AuthService;
+import com.movierecommendation.backend.service.FilmService;
 import com.movierecommendation.backend.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,26 +22,23 @@ import java.util.Map;
 @RequestMapping("/api/ratings")
 public class RatingController {
 
-    // TODO use service instead of repository
-    @Autowired
-    private RatingRepository ratingRepository;
     @Autowired
     private RatingService ratingService;
     @Autowired
-    private FilmRepository filmRepository;
+    private FilmService filmService;
     @Autowired
     private AuthService authService;
 
     @JsonView(GenreViews.GenreView.class)
     @GetMapping
     public List<Rating> index() {
-        return ratingRepository.findAll();
+        return ratingService.getAllRatings();
     }
 
     @JsonView(GenreViews.GenreView.class)
     @GetMapping("/{id}")
     public Rating show(@PathVariable Long id) {
-        return ratingRepository.findById(id).orElse(null);
+        return ratingService.findById(id);
     }
 
     @PostMapping
@@ -48,7 +46,7 @@ public class RatingController {
         String filmId = body.get("film_id");
         String ratingValue = body.get("rating_value");
         User user = authService.getUserByUsername(authService.getCurrentUsername());
-        Film film = filmRepository.findById(Integer.parseInt(filmId)).orElse(null);
+        Film film = filmService.getFilmById(Integer.parseInt(filmId));
 
         // delete existing rating if it exists
         ratingService.deleteRatingByUserIdAndFilmId(user.getId(), Long.parseLong(filmId));
@@ -65,7 +63,7 @@ public class RatingController {
     @JsonView(GenreViews.GenreView.class)
     @PutMapping("/{id}")
     public Rating update(@RequestBody Rating rating, @PathVariable Long id) {
-        Rating existingRating = ratingRepository.findById(id).orElse(null);
+        Rating existingRating = ratingService.findById(id);
         if (existingRating != null) {
             existingRating.setRatingValue(rating.getRatingValue());
             return ratingService.saveRating(existingRating);

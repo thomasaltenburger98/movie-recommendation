@@ -2,6 +2,8 @@ package com.movierecommendation.backend;
 
 import com.movierecommendation.backend.factory.FilmFactory;
 import com.movierecommendation.backend.repository.*;
+import com.movierecommendation.backend.service.CSVDataManager;
+import com.movierecommendation.backend.service.CsvFile;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -42,6 +44,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private CSVDataManager csvDataManager;
+
     private Map<Long, Long> filmTmbdAssociation = new HashMap<>();
 
     @Override
@@ -77,8 +82,8 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadTmdbData() {
         System.out.println("Loading tmdb data");
-        // TODO use CSVDataManager to get file path
-        String csvFile = "../ml-latest-small/links.csv";
+        // String csvFile = "../ml-latest-small/links.csv";
+        String csvFile = csvDataManager.getFilePathOfCSVFile(CsvFile.LINKS);
         try (Reader in = new FileReader(csvFile)) {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -104,8 +109,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadFilmData() {
         System.out.println("Loading film data");
-        // TODO use CSVDataManager to get file path
-        String csvFile = "../ml-latest-small/movies.csv";
+        //String csvFile = "../ml-latest-small/movies.csv";
+        String csvFile = csvDataManager.getFilePathOfCSVFile(CsvFile.MOVIES);
+
         try (Reader in = new FileReader(csvFile)) {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -146,8 +152,9 @@ public class ApplicationStartupRunner implements CommandLineRunner {
 
     private void loadRatingData() {
         System.out.println("Loading rating data");
-        // TODO use CSVDataManager to get file path
-        String csvFile = "../ml-latest-small/ratings.csv";
+        // String csvFile = "../ml-latest-small/ratings.csv";
+        String csvFile = csvDataManager.getFilePathOfCSVFile(CsvFile.RATINGS);
+
         Map<Long, User> userMap = new HashMap<>();
 
         try (Reader in = new FileReader(csvFile)) {

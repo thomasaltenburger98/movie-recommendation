@@ -4,6 +4,7 @@ import com.movierecommendation.backend.helpers.TmdbConfig;
 import com.movierecommendation.backend.model.data.FilmDetail;
 import com.movierecommendation.backend.model.data.WatchProviders;
 import com.movierecommendation.backend.model.data.WatchProvidersJSONResult;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,8 +34,8 @@ public class ImdbService {
         }
     }*/
 
+    @Cacheable(value = "tmdbConfig", key = "'tmdbConfig'")
     public TmdbConfig getTmdbConfig() {
-        // TODO Caching
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(BEARER_TOKEN);
@@ -49,7 +50,7 @@ public class ImdbService {
         }
     }
 
-    // TODO caching
+    @Cacheable(value = "filmInfo", key = "#tmdbId")
     public FilmDetail getFilmInfoFromTmdb(Long tmdbId) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

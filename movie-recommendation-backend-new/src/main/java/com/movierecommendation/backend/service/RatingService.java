@@ -16,6 +16,14 @@ public class RatingService {
     @Autowired
     private CSVDataManager csvDataManager;
 
+    public List<Rating> getAllRatings() {
+        return ratingRepository.findAll();
+    }
+
+    public Rating findById(long id) {
+        return ratingRepository.findById(id).orElse(null);
+    }
+
     public void rateFilm(int filmId, int userId, int ratingValue) {
         Rating rating = new Rating();
         //rating.setFilm(new Film(filmId));
