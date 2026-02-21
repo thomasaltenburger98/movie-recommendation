@@ -13,16 +13,16 @@ In the future, users can also view their movie ratings from the past and receive
 
 ## Features
 
-[x] -> not finished yet, [✓] -> finished
+[x] -> not finished yet
 
 - User Registration: Users can create an account to access personalized movie recommendations. [x]
 - User Authentication: Secure user authentication is implemented to protect user accounts. [x]
-- Movie Search: Users can search for movies by title, genre, or other criteria. [x]
-- Movie Ratings: Users can rate movies. [✓]
-- Past movie ratings: Users can see all rated movies. [x]
-- Recommendation Engine: The app utilizes a machine learning algorithm to suggest movies based on user preferences and ratings. [x]
-- Genre Filtering: Users can filter movie recommendations based on specific genres. [x]
-- User Dashboard: Users have access to a personalized dashboard that displays their ratings, watched movies, and recommended movies. [x]
+- Movie Search: Users can search for movies by title, genre, or other criteria. 
+- Movie Ratings: Users can rate movies. 
+- Past movie ratings: Users can see all rated movies. 
+- Recommendation Engine: The app utilizes a machine learning algorithm to suggest movies based on user preferences and ratings.
+- Genre Filtering: Users can filter movie recommendations based on specific genres.
+- User Dashboard: Users have access to a personalized dashboard that displays their ratings, watched movies, and recommended movies.
 
 ## Technologies Used
 
