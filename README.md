@@ -1,6 +1,6 @@
 # Movie Recommendation App
 
-The Movie Recommendation App is a web application that provides personalized movie recommendations based on user preferences. The app utilizes a combination of a Laravel backend, an Angular frontend, and a Python machine learning script for recommendation generation.
+The Movie Recommendation App is a web application that provides personalized movie recommendations based on user preferences. The app utilizes a combination of a Spring Boot backend, an Angular frontend, and a Python machine learning script for recommendation generation.
 
 ---
 
@@ -13,23 +13,20 @@ In the future, users can also view their movie ratings from the past and receive
 
 ## Features
 
-[x] -> not finished yet
-
-- User Registration: Users can create an account to access personalized movie recommendations. [x]
-- User Authentication: Secure user authentication is implemented to protect user accounts. [x]
-- Movie Search: Users can search for movies by title, genre, or other criteria. 
+- User Registration: Users can create an account to access personalized movie recommendations. 
+- User Authentication: Secure user authentication is implemented to protect user accounts. 
+- Movie Search: Users can search for movies by title
 - Movie Ratings: Users can rate movies. 
 - Past movie ratings: Users can see all rated movies. 
-- Recommendation Engine: The app utilizes a machine learning algorithm to suggest movies based on user preferences and ratings.
-- Genre Filtering: Users can filter movie recommendations based on specific genres.
-- User Dashboard: Users have access to a personalized dashboard that displays their ratings, watched movies, and recommended movies.
+- Watch-List
+- Recommendation Engine: The app utilizes a machine learning algorithm to suggest movies based on user preferences and ratings. (User-based collaborative filtering)
 
 ## Technologies Used
 
-- Laravel: A powerful PHP framework used for building the backend server-side logic and API endpoints.
+- Spring Boot for the main backend service (REST API)
 - Angular: A TypeScript-based web application framework used for creating the interactive frontend user interface.
-- SQLite: A relational database management system used to store movie data, user information, and ratings.
-- Python: A programming language used for the machine learning script that generates movie recommendations.
+- Postgresql
+- Python
 - Pandas: A data manipulation library in Python used for reading and processing movie data.
 - Scikit-learn: A machine learning library in Python used for calculating similarity scores and generating movie recommendations.
 
@@ -46,7 +43,41 @@ The Python machine learning script is responsible for generating movie recommend
 7. Recommendation Generation: Based on a target user's watched movies, the script identifies similar movies and predicts their ratings using a weighted average of similarity scores.
 8. Top Recommendations: The script generates a list of top recommended movies for the target user based on the predicted ratings.
 
-The machine learning script is integrated into the Laravel backend and is invoked when a user requests movie recommendations.
+The machine learning script communicates with the Spring Boot backend via an additional REST API. 
+
+---
+## Setup
+
+A step by step series of examples that tell you how to get this environment running:
+
+1. Requirements: Docker, Java (+ Maven), Node.js, npm
+2. Backend: Run `mvn clean install` to build the backend and run the backend
+3. Frontend: Run `npm install` to install the frontend dependencies _(Angular and its dependencies)_ and run the frontend with `npm start`
+
+### Database Setup
+
+This project uses PostgreSQL as its database. You can easily set up a PostgreSQL instance using Docker:
+
+1. Install Docker on your machine if you haven't already. You can download it from [here](https://www.docker.com/products/docker-desktop).
+2. Run the following command to pull the PostgreSQL image and run it as a Docker container:
+
+```bash
+docker run --name movierecommendationdb -p 5455:5432 -e POSTGRES_USER=postgresuser -e POSTGRES_PASSWORD=mysecretpassword POSTGRES_DB=movie-recommendation-db -d postgres
+```
+Replace "mysecretpassword" with the password you want to set for your PostgreSQL database.
+The password should be set in the **application.properties** file in the Spring Boot backend.
+
+```
+spring.datasource.url=jdbc:postgresql://localhost:5432/movie-recommendation-db
+spring.datasource.username=postgresuser
+spring.datasource.password=mysecretpassword
+```
+
+### Machine Learning Service Setup
+
+1. Install the required packages: `pip install flask pandas numpy scikit-learn`
+2. Run the machine learning service: `python movie-recommender.py`
+3. Ensure that the port 5000 is used for the machine learning service. If you want to change the port, you need to update the URL in the Spring Boot backend.
 
 ---
 
