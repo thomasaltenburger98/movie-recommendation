@@ -4,13 +4,6 @@ The Movie Recommendation App is a web application that provides personalized mov
 
 ---
 
-## Current functionality
-
-When the user opens the main page, they receive an ID which is saved for the session.
-Using their ID, the user can rate several movies that are displayed on the page.
-In the future, users can also view their movie ratings from the past and receive recommended movies based on their ratings.
----
-
 ## Features
 
 - User Registration: Users can create an account to access personalized movie recommendations. 
